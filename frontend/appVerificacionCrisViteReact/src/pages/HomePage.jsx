@@ -2,9 +2,7 @@ import ProductForm from '../components/ProductForm';
 
 const HomePage = () => {
   return (
-    <div>
-      <ProductForm />
-    </div>
+    <ProductForm />
   );
 };
 

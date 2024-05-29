@@ -1,15 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Viga&display=swap');
 
-/* Cabecera */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+/* Cabecera */
 header {
+  background: #23305e;
+  margin-top: 5%;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #23305e;
-  height: 100px;
-  margin: 40px 0 40px 0;
-  gap: 50px;
+  gap: 15px;
+  height: 80px;
 }
 
 header h1 {
@@ -87,15 +92,6 @@ form input {
   color: #000;
 }
 
-form button {
-  color: #fff;
-  font-weight: bold;
-  padding: 15px;
-  border-radius: 50px;
-  margin: 25px 0 0 15px;
-  background: #000;
-}
-
 form p {
   margin: 30px 0 0 15px;
 }
@@ -143,14 +139,14 @@ form button:hover {
 .num-operario {
   position: absolute;
   top: 90px;
-  left: 45px;
+  left: 50px;
   background: #fff;
   border-radius: 50px;
 }
 
 .num-operario span {
   color: #23305e;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
   padding: 5px;
 }
@@ -168,6 +164,7 @@ form button:hover {
   display: flex;
   gap: 55px;
   align-items: center;
+  margin-top: 30px;
 
 }
 
@@ -193,9 +190,9 @@ form button:hover {
   border: 0;
 }
 
-/* Sección Revisiones */
+/* Sección verificaciones */
 
-.revisiones  {
+.verificaciones  {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -296,7 +293,7 @@ footer {
 }
 
 .fotos {
-  width: 55%;            
+  width: 50%;            
   border: 7px solid #23305e;
   border-radius: 50px;
   padding: 30px;
@@ -329,12 +326,12 @@ video {
   gap: 20px;
 }
 
-.buttons button {
+.third-section button {
   color: #fff;
   font-size: 24px;
   border: 3px solid #23305e;
   border-radius: 20px;
-  width: 70%;
+  width: 25%;
   padding: 15px;
   background: #23305e;
   font-weight: bold;
@@ -342,18 +339,27 @@ video {
   cursor: pointer;
 }
 
-.buttons #btnExcel {
+footer button {
+  color: #fff;
+  font-family: "Avenir", sans-serif;
+  font-size: 24px;
+  font-weight: bold;
   background: #23305e;
   border: 3px solid #56bd9b;
+  border-radius: 15px;
+  padding: 20px;
+  width: 25%;
 }
 
 /* Login */
 
-body {
+.login-body {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: #23305e;
-  height: 100vh;
+  height: 100vh;  
 }
 
 .form-is {
@@ -379,10 +385,20 @@ body {
   width: 220px;
 }
 
+.remember-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 40px;
+  gap: 70px;
+}
+
+.remember-wrapper a {
+  font-family: "Avenir", sans-serif;
+}
+
 #container-check {
   display: flex;
   align-items: center;
-  margin-top: 30px;
 }
 
 #txt-t {
@@ -406,6 +422,14 @@ body {
 .icon {
   margin-right: 25px;
   color: #23305e;
+}
+
+.volver {
+  margin: 20px 10px;
+}
+
+.volver a {
+  font-family: "Avenir", sans-serif;
 }
 
 .i-is:focus {
@@ -443,4 +467,356 @@ body {
 
 .txt-p {
   color: rgb(180, 180, 180);
+}
+
+/* Panel Admin */
+
+.admin-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  
+}
+
+.admin-main section {
+  padding: 20px;
+  background: #23305e;
+  width: 40%;
+  }
+  
+.admin-main h1 {
+  font-family: 'Viga', sans-serif;
+  margin-left: 20px;
+  font-size: 36px;
+}
+    
+.admin-main section ul {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 20px;
+}
+
+.admin-main section ul a {
+  color: #fff;
+  text-decoration: none;  
+}
+
+.admin-main section ul a:hover {
+  color: #56bd9b;
+}
+
+/* Listados */
+
+.listado-clientes, .listado-modelos, .listado-revisiones, .listado-usuarios, .listado-verificaciones {
+  background: #23305e;
+  padding: 25px;
+  width: 70%;
+}
+
+/* Listado clientes */
+
+.clientes-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100vh;
+  }
+
+.info-cliente p {
+  color: #fff;
+}
+
+.listado-clientes button {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.listado-clientes button a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.listado-clientes button:hover {
+  background: #00CB7F;
+}
+
+/* Crear Cliente */
+
+.crear-cliente-main {
+  width: 80%;
+  text-align: center;
+  margin: 350px auto;
+}
+
+.crear-cliente {
+  background: #23305e;
+  padding: 25px;
+}
+
+.crear-cliente h2 {
+  font-family: 'Avenir', sans-serif;
+}
+
+#btn-crear-cliente {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+#btn-crear-cliente:hover {
+  background: #00CB7F;
+}
+
+/* Listado modelos */
+
+.modelos-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100vh;
+  }
+
+.info-modelo p {
+  color: #fff;
+}
+
+.listado-modelos button {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.listado-modelos button a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.listado-modelos button:hover {
+  background: #00CB7F;
+}
+/* Listado revisiones */
+
+.revisiones-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100vh;
+}
+
+.info-revision p {
+  color: #fff;
+}
+
+.listado-revisiones button {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.listado-revisiones button a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.listado-revisiones button:hover {
+  background: #00CB7F;
+}
+
+/* Listado usuarios */
+
+.usuarios-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100vh;
+  }
+
+.info-usuario p {
+  color: #fff;
+}
+
+.listado-usuarios button {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.listado-usuarios button a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.listado-usuarios button:hover {
+  background: #00CB7F;
+}
+
+/* Listado verificaciones */
+
+.verificaciones-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100vh;
+}
+
+.info-verificacion p {
+  color: #fff;
+}
+
+.listado-verificaciones button {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.listado-verificaciones button a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.listado-verificaciones button:hover {
+  background: #00CB7F;
+}
+
+/* Listado verificaciones */
+
+.verificaciones-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100vh;
+}
+
+.info-usuario p {
+  color: #fff;
+}
+
+.listado-verificaciones button {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.listado-verificaciones button a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.listado-verificaciones button:hover {
+  background: #00CB7F;
+}
+
+/* Listado Verificaciones */
+
+.verificaciones-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100vh;
+  }
+  
+.listado-verificaciones {
+    background: #23305e;
+    padding: 25px;
+    width: 70%;
+}
+
+.info-usuario p {
+  color: #fff;
+}
+
+.listado-verificaciones button {
+  display: flex;
+  margin: auto;
+  margin-top: 45px;
+  background: #56bd9b;
+  padding: 15px;
+  color: #fff;
+  font-weight: bold;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.listado-verificaciones button a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.listado-verificaciones button:hover {
+  background: #00CB7F;
 }

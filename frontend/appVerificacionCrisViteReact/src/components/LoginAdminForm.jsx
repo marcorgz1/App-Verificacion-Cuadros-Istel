@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import LockIcon from "../icons/LockIcon.jsx";
 import UsersIcon from "../icons/UsersIcon.jsx";
 
-const LoginForm = ({ onLogin }) => {
+const LoginAdminForm = ({ onLogin }) => {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [claveSecreta, setClaveSecreta] = useState("");
   const [recuerdame, setRecuerdame] = useState(false);
@@ -30,14 +30,15 @@ const LoginForm = ({ onLogin }) => {
   };
 
   return (
-    <div className="login-body">
+    <body className="login-body">
+      
       <main className="login-main">
         <div className="container-img">
           <img src="src/assets/logo-istel.png" />
         </div>
         <form className="form-is" onSubmit={handleSubmit}>
           <div className="container-form1">
-            <h2 id="txt-t">INICIAR SESIÓN</h2>
+            <h2 id="txt-t">ADMIN</h2>
           </div>
           <div className="container-form2">
             <div id="container-input">
@@ -45,7 +46,7 @@ const LoginForm = ({ onLogin }) => {
                 <input
                   type="text"
                   className="i-is"
-                  placeholder="Nombre Usuario"
+                  placeholder="Admin"
                   value={nombreUsuario}
                   onChange={(e) => setNombreUsuario(e.target.value)}
                 />
@@ -58,24 +59,15 @@ const LoginForm = ({ onLogin }) => {
                 className="i-is"
                 value={claveSecreta}
                 onChange={(e) => setClaveSecreta(e.target.value)}
-                placeholder="Clave Secreta"
+                placeholder="Clave secreta"
               />
               <LockIcon className="icon" />
             </div>
-            <div className="remember-wrapper">
-              <div id="container-check">
-                <input
-                  type="checkbox"
-                  id="i-ch"
-                  checked={recuerdame}
-                  onChange={(e) => setRecuerdame(e.target.checked)}
-                />
-                <span className="txt-p">Recuérdame</span>
-              </div>
-                <a href="/admin">Inicio sesión admin</a>
-            </div>
+            <section className="volver">
+              <a href="/">Volver</a>
+            </section>
           </div>
-          <div className="container-form3">
+          <div className="container-form3"> 
             <button type="submit" id="btn-conectar">
               CONECTAR
             </button>
@@ -85,8 +77,8 @@ const LoginForm = ({ onLogin }) => {
           </div>
         </form>
       </main>
-    </div>
+    </body>
   );
 };
 
-export default LoginForm;
+export default LoginAdminForm;

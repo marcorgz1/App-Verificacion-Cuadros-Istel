@@ -78,9 +78,34 @@ app.get('/clientes', (req, res) => {
   });
 });
 
+// Crear nuevo cliente
+app.post('/clientes', (req, res) => {
+  const { nombre_cliente } = req.body;
+  db.query('INSERT INTO clientes (nombre_cliente) VALUES (?)', [nombre_cliente], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(result);
+    }
+  });
+});
+
 // Obtener modelos
 app.get('/modelos', (req, res) => {
   db.query('SELECT * FROM modelos', (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+// Obtener Requisitos
+
+app.get('/requisitos', (req, res) => {
+  const { idModelo } = req.params;
+  db.query('SELECT * FROM requisitos', (err, results) => {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -100,6 +125,28 @@ app.get('/requisitos/:idModelo', (req, res) => {
     }
   });
 });
+
+// Obtener usuarios
+app.get('/usuarios', (req, res) => {
+  db.query('SELECT * FROM usuarios', (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+// Obtener verificaciones
+app.get('/verificaciones', (req, res) => {
+  db.query('SELECT * FROM verificaciones', (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+})
 
 // Guardar verificación de producto
 app.post('/verificaciones', (req, res) => {
@@ -122,6 +169,6 @@ app.post('/verificaciones', (req, res) => {
   });
 });
 
-app.listen(3001, () => {
-  console.log('Server running on port 3001');
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
 });

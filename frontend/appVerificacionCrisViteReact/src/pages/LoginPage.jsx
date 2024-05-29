@@ -1,11 +1,9 @@
-import LoginForm from '../components/LoginForm';
+import LoginForm from '../components/LoginForm.jsx';
 import '../App.css';
 
 const LoginPage = ({ onLogin }) => {
   return (
-    <div>
       <LoginForm onLogin={onLogin} />
-    </div>
   );
 };
 
