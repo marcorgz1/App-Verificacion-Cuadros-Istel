@@ -1,0 +1,446 @@
+@import url('https://fonts.googleapis.com/css2?family=Viga&display=swap');
+
+/* Cabecera */
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #23305e;
+  height: 100px;
+  margin: 40px 0 40px 0;
+  gap: 50px;
+}
+
+header h1 {
+  font-size: 48px;
+  font-family: 'Viga', sans-serif;
+}
+
+header img {
+  width: 250px;
+}
+
+/* Formulario Login */
+
+.form-login input {
+  margin-left: 40px;
+  padding: 5px;
+}
+
+.form-login input[type="checkbox"] {
+  margin: 20px 0 0 40px;
+  width: 25px;
+  height: 25px;
+}
+
+.form-login button {
+  margin-left: 25px;
+}
+
+form label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+input {
+  background: #fff;
+  height: 20px;
+  border-radius: 15px;
+  margin-left: 10px;
+}
+
+select {
+  appearance: none;
+  height: 20px;
+  color: #000;
+  background: #fff;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDEiIGhlaWdodD0iMjMiIHZpZXdCb3g9IjAgMCA0MSAyMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIwLjQ2NSAyMy4wMDFMMCAwaDQxbC0yMC40NjUgMjMuMDAxeiIgZmlsbD0iI0E4QzQ2MCIvPgo8L3N2Zz4K');
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  background-position: right 10px center;
+  background-size: 15px;
+  margin: 15px 0 0 30px;
+  width: 350px;
+  height: 30px;
+  padding-left: 15px;
+}
+
+select option {
+  color: #000;
+  margin-left: 10px;
+}
+
+select:focus option:checked {
+  color: #000;
+}
+
+select option:checked {
+  background-color: #fff;
+}
+
+p {
+  color: #000;
+}
+
+form input {
+  color: #000;
+}
+
+form button {
+  color: #fff;
+  font-weight: bold;
+  padding: 15px;
+  border-radius: 50px;
+  margin: 25px 0 0 15px;
+  background: #000;
+}
+
+form p {
+  margin: 30px 0 0 15px;
+}
+
+form button:hover {
+  transition: .3s;
+  background: #56bd9b;
+}
+
+.formulario {
+  margin: 70px 85px;
+  background: #23305e;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 2px 7px 7px 3px #56bd9b;
+  width: 80%;
+}
+
+.first-section {
+  display: flex;
+  gap: 40px;
+}
+
+.operario-foto-producto {
+  display: flex;
+  gap: 40px;
+  height: 200px;
+}
+
+.operario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 30px;
+  gap: 15px;
+  font-weight: 500;
+}
+
+.icono-operario {
+  position: relative;
+  background: #fff;
+  border-radius: 30px;
+}
+
+.num-operario {
+  position: absolute;
+  top: 90px;
+  left: 45px;
+  background: #fff;
+  border-radius: 50px;
+}
+
+.num-operario span {
+  color: #23305e;
+  font-size: 32px;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.foto-producto img {
+  width: 100px;
+  margin-top: 15px;
+  background: #fff;
+  border: 4px solid #56bd9b;
+  border-radius: 40px;
+  padding: 25px;
+}
+
+.numSeries-clientes {
+  display: flex;
+  gap: 55px;
+  align-items: center;
+
+}
+
+.numSerie-clientes {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.campos-clientes input {
+  color: #000;
+}
+
+.cliente-adicional {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+.cliente-adicional button {
+  background: none;
+  border: 0;
+}
+
+/* Sección Revisiones */
+
+.revisiones  {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #56bd9b;
+  margin: 70px 0 0 100px;
+  padding: 20px;
+  border-radius: 40px;
+  box-shadow: 2px 2px 7px 4px #f1e866;
+  width: 75%;
+}
+
+.revision {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.numRevision {
+  background: #fff;
+  border-radius: 50%;
+}
+
+.numRevision span {
+  color: #fff;
+  -webkit-text-stroke: 1px #23305e;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.revision input {
+  color: #23305e;
+  font-weight: bold;
+  border: 3px solid #23305e;
+  padding: 10px;
+  height: 5px;
+  border-radius: 50px;
+  margin-left: 35px;
+}
+
+.custom-checkbox {
+  position: relative;
+  display: inline-block;    
+  margin-left: 30px;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.custom-checkbox .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;    
+  background-color: #fff;            
+  border: 4px solid #23305e;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkmark {
+  background-color: #2196F3; /* Color de fondo al estar marcado */
+}
+
+.custom-checkbox .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+/* Third Section */
+
+footer {
+  display: flex;
+  margin: 100px 0 0 70px;
+  align-items: center;
+  gap: 80px;  
+  padding-bottom: 30px;         
+}
+
+.fotos {
+  width: 55%;            
+  border: 7px solid #23305e;
+  border-radius: 50px;
+  padding: 30px;
+  height: 130px;
+  position: relative;
+}
+
+.camera {
+  position: relative;
+  float: right;
+  margin-right: 70px;
+}
+
+video {
+  width: 140px;
+}
+
+.camera-icon {
+  color: #23305e;
+  font-size: 40px;
+  position: absolute;
+  top: 120px;
+  right: 25px;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.buttons button {
+  color: #fff;
+  font-size: 24px;
+  border: 3px solid #23305e;
+  border-radius: 20px;
+  width: 70%;
+  padding: 15px;
+  background: #23305e;
+  font-weight: bold;
+  box-shadow: 2px 2px 7px 1px #56bd9b;
+  cursor: pointer;
+}
+
+.buttons #btnExcel {
+  background: #23305e;
+  border: 3px solid #56bd9b;
+}
+
+/* Login */
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: #23305e;
+  height: 100vh;
+}
+
+.form-is {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 35px;
+  font-family: 'Onest';
+}
+
+.container-img {
+  position: absolute;
+  top: 3%;
+  left: 40%;
+  margin: auto;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.container-img img {
+  width: 220px;
+}
+
+#container-check {
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+}
+
+#txt-t {
+  color:#23305e;
+  font-size: 35px;
+  letter-spacing: 5px;
+  font-family: 'Avenir', sans-serif;
+  font-weight: 600;
+}
+
+.i-is {
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  width: 300px; 
+  height: 50px;
+  background: none;
+  color: #000;
+}
+
+.icon {
+  margin-right: 25px;
+  color: #23305e;
+}
+
+.i-is:focus {
+  outline: none;
+}
+
+.i-f {
+  margin-bottom: 10px;
+  border: 3px solid #56bd9b;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+}
+
+#i-ch {
+  width: 40px;
+  height: 20px;
+}
+
+.container-form3 {
+  margin-top: 20px;
+}
+
+#btn-conectar {
+  color: #23305e;
+  background-color: #56bd9b;
+  font-weight: bold;
+  border: 5px solid #23305e;
+  border-radius: 20px;
+  font-size: 30px;
+  width: 300px;
+  -webkit-text-stroke: 1.5px #fff;
+  margin-top: 15px;
+}
+
+.txt-p {
+  color: rgb(180, 180, 180);
+}
