@@ -8,7 +8,7 @@ const AdminForm = () => {
                 <ul>
                     <a href="/clientes">Clientes</a>
                     <a href="/modelos">Modelos</a>
-                    <a href="/revisiones">Requisitos</a>
+                    <a href="/requisitos">Requisitos</a>
                     <a href="/usuarios">Usuarios</a>
                     <a href="/verificaciones">Verificaciones</a>
                 </ul>

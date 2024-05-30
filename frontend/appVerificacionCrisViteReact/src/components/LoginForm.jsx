@@ -14,7 +14,7 @@ const LoginForm = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/login", {
+      const response = await axios.post("http://localhost:3000/login", {
         nombre_usuario: nombreUsuario,
         clave_secreta: claveSecreta,
       });

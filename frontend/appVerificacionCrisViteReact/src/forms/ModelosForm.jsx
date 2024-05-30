@@ -13,11 +13,17 @@ const ModelosForm = () => {
     }, [])
 
     return (
-        <main className="modelos-main">
+        <main className="modelos-main">            
             <section className="listado-modelos">
-                <button>
-                    <a href="/dashboard">Volver</a>
-                </button>
+                <div className="buttons-wrapper">
+                    <button id="btn-volver">
+                        <a href="/dashboard">Volver</a>
+                    </button>
+                    <button>
+                        <a href="/modelos/crear-modelo">Crear Modelo</a>
+                    </button>
+                </div>
+                <br />
                 <h1>Listado Modelos</h1>
                 {modelos.map((modelo, index) => (
                     <section key={modelo.id} className="info-modelo">
@@ -26,12 +32,9 @@ const ModelosForm = () => {
                         {/* Comprobar si el elemento actual de la lista es el último de la misma, si no lo es imprimir elemento "hr",
                         si lo es, no imprimirlo */}
                         {/* index !== clientes.length -1: Comprobar si el elemento actual es el último */}
-                        {index !== modelo.length - 1 && <hr />}
+                        {index !== modelos.length - 1 && <hr />}
                     </section>
-                ))}
-            <button>
-                <a href="/modelos/crear-modelo">Crear Modelo</a>
-            </button>
+                ))}            
             </section>
         </main>
     )

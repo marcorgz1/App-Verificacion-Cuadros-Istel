@@ -14,9 +14,15 @@ const UsuariosForm = () => {
   return (
     <main className="usuarios-main">
       <section className="listado-usuarios">
-        <button>
-            <a href="/dashboard">Volver</a>
-        </button>
+        <div className="buttons-wrapper">
+          <button id="btn-volver">
+              <a href="/dashboard">Volver</a>
+          </button>
+          <button>
+            <a href="/usuarios/crear-usuario">Crear Usuario</a>
+          </button>
+        </div>
+        <br />
         <h1>Listado usuarios</h1>
         {usuarios.map((usuario, index) => (
           <section key={usuario.id} className="info-usuario">
@@ -27,12 +33,9 @@ const UsuariosForm = () => {
             {/* Comprobar si el elemento actual de la lista es el último de la misma, si no lo es imprimir elemento "hr",
                         si lo es, no imprimirlo */}
             {/* index !== usuarios.length -1: Comprobar si el elemento actual es el último */}
-            {index !== usuario.length - 1 && <hr />}
+            {index !== usuarios.length - 1 && <hr />}
           </section>
-        ))}
-        <button>
-          <a href="/usuarios/crear-usuario">Crear Usuario</a>
-        </button>
+        ))}        
       </section>
     </main>
   );

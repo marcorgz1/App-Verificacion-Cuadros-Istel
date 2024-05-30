@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
+const e = require('express');
 
 const app = express();
 app.use(cors());
@@ -101,6 +102,18 @@ app.get('/modelos', (req, res) => {
   });
 });
 
+// Crear nuevo modelo
+app.post('/modelos', (req, res) => {
+  const { nombre_modelo } = req.body;
+  db.query('INSERT INTO modelos (nombre_modelo) VALUES (?)', [nombre_modelo], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(result);
+    }    
+  })
+})
+
 // Obtener Requisitos
 
 app.get('/requisitos', (req, res) => {
@@ -125,6 +138,19 @@ app.get('/requisitos/:idModelo', (req, res) => {
     }
   });
 });
+
+// Crear nuevo requisito
+
+app.post('/requisitos', (req, res) => {
+  const { nombre_requisito } = req.body;
+  db.query('INSERT INTO requisitos (nombre_requisito, id_modelo) VALUES (?)', [nombre_requisito], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(result);
+    }    
+  })
+})
 
 // Obtener usuarios
 app.get('/usuarios', (req, res) => {

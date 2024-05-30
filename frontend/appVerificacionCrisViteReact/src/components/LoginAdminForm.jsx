@@ -30,7 +30,7 @@ const LoginAdminForm = ({ onLogin }) => {
   };
 
   return (
-    <body className="login-body">
+    <div className="login-body">
       
       <main className="login-main">
         <div className="container-img">
@@ -77,7 +77,7 @@ const LoginAdminForm = ({ onLogin }) => {
           </div>
         </form>
       </main>
-    </body>
+    </div>
   );
 };
 

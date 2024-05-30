@@ -53,7 +53,7 @@ const ProductForm = () => {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const result = await axios.get("http://localhost:3001/clientes");
+        const result = await axios.get("http://localhost:3000/clientes");
         setClientes(result.data);
       } catch (error) {
         console.error("Error fetching clients:", error);
@@ -66,7 +66,7 @@ const ProductForm = () => {
   useEffect(() => {
     const fetchModelos = async () => {
       try {
-        const result = await axios.get("http://localhost:3001/modelos");
+        const result = await axios.get("http://localhost:3000/modelos");
         setModelos(result.data);
       } catch (error) {
         console.error("Error fetching models:", error);
@@ -207,7 +207,7 @@ const ProductForm = () => {
 
       // Guardar datos en la base de datos
       const response = await axios.post(
-        "http://localhost:3001/verificaciones",
+        "http://localhost:3000/verificaciones",
         {
           ...form,
           id_usuario: userId, // Utilizar el ID del usuario logueado

@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const CrearClienteForm = () => {
     const [nombreCliente, setNombreCliente] = useState('')
+    const [clienteAgregado, setClienteAgregado] = useState('')
 
     const handleInputChange = (event) => {
         setNombreCliente(event.target.value)
@@ -21,9 +22,10 @@ const CrearClienteForm = () => {
                 console.log('Cliente Creado: ', data)
 
                 setNombreCliente('')
+                setClienteAgregado('El nuevo cliente se agregó correctamente')
             })
             .catch(error => {
-                console.error('Error al crear el cliente introducido:', error)
+                console.error('Error al crear el nuevo cliente:', error)
             })
     }
     return (
@@ -35,8 +37,16 @@ const CrearClienteForm = () => {
                     <label htmlFor="nomCliente">Nombre:</label>
                     <input type="text" value={nombreCliente} onChange={handleInputChange} required />
                     <br />
-                    <button type="submit" id="btn-crear-cliente">Crear Cliente</button>
+                    <div className='buttons-wrapper'>
+                        <button type="submit" id="btn-crear-cliente">Crear Cliente</button>
+                        <button id='btn-volver'>
+                            <a href="/clientes">Volver</a>
+                        </button>
+                    </div>
                 </form>
+                {clienteAgregado &&
+                    <p>{clienteAgregado}</p>
+                }
             </section>
         </main>
     )

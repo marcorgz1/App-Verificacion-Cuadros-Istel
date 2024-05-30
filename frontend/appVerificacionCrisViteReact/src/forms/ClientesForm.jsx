@@ -13,11 +13,17 @@ const ClientesForm = () => {
     }, []);
 
     return (
-        <main className="modelos-main">
+        <main className="clientes-main">
             <section className="listado-clientes">
-                <button>
-                    <a href="/dashboard">Volver</a>
-                </button>
+                <div className="buttons-wrapper">
+                    <button id="btn-volver">
+                        <a href="/dashboard">Volver</a>
+                    </button>
+                    <button>
+                        <a href="/clientes/crear-cliente">Crear Cliente</a>
+                    </button>
+                </div>
+                <br />
                 <h1>Listado Clientes</h1>
                 {clientes.map((cliente, index) => (
                     <section key={cliente.id} className="info-cliente">
@@ -28,10 +34,7 @@ const ClientesForm = () => {
                         {/* index !== clientes.length -1: Comprobar si el elemento actual es el último */}
                         {index !== clientes.length - 1 && <hr />}
                     </section>
-                ))}
-            <button>
-                <a href="/clientes/crear-cliente">Crear Cliente</a>
-            </button>
+                ))}            
             </section>
         </main>
     )
