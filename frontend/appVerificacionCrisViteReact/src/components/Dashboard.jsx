@@ -6,6 +6,7 @@ const AdminForm = () => {
             <section>
                 <h1>Panel Admin</h1>
                 <ul>
+                    <a href="/administradores">Administradores</a>
                     <a href="/clientes">Clientes</a>
                     <a href="/modelos">Modelos</a>
                     <a href="/requisitos">Requisitos</a>

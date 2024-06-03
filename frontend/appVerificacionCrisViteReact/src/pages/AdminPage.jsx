@@ -1,4 +1,4 @@
-import AdminForm from '../components/AdminForm.jsx';
+import AdminForm from '../components/Dashboard.jsx';
 
 export const AdminPage = () => {
     return (

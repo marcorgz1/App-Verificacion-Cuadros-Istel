@@ -9,7 +9,7 @@ import { AdminPage } from './pages/AdminPage.jsx';
 import { ClientesPage } from './pages/ClientesPage.jsx';
 import { CrearClientePage } from './pages/CrearClientePage.jsx';
 import { ModelosPage } from './pages/ModelosPage.jsx';
-import { RevisionesPage } from './pages/RevisionesPage.jsx';
+import { RequisitosPage } from './pages/RequisitosPage.jsx';
 import { UsuariosPage } from './pages/UsuariosPage.jsx';
 import { VerificacionesPage } from './pages/VerificacionesPage.jsx';
 
@@ -42,7 +42,7 @@ const App = () => {
         <Route path="/clientes" element={<ClientesPage />} />
         <Route path="/clientes/crear-cliente" element={<CrearClientePage />} />
         <Route path="/modelos" element={<ModelosPage />} />
-        <Route path="/revisiones" element={<RevisionesPage />} />
+        <Route path="/requisitos" element={<RequisitosPage />} />
         <Route path="/usuarios" element={<UsuariosPage />} />
         <Route path="/verificaciones" element={<VerificacionesPage />} />
       </Routes>

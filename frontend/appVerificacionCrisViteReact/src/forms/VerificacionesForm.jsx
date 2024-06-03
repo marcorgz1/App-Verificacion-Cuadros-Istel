@@ -15,6 +15,7 @@ const VerificacionesForm = () => {
     return (
         <main className="verificaciones-main">
             <section className="listado-verificaciones">
+                <h1>Listado verificaciones</h1>
                 <div className="buttons-wrapper">
                     <button id="btn-volver">
                         <a href="/dashboard">Volver</a>
@@ -24,7 +25,6 @@ const VerificacionesForm = () => {
                     </button>
                 </div>
                 <br />
-                <h1>Listado verificaciones</h1>
                 {verificaciones.map((verificacion, index) => (
                     <section key={verificacion.id} className="info-verificacion">
                         <p>Id: {verificacion.id}</p>

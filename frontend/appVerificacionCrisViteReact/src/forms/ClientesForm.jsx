@@ -15,6 +15,7 @@ const ClientesForm = () => {
     return (
         <main className="clientes-main">
             <section className="listado-clientes">
+                <h1>Listado Clientes</h1>
                 <div className="buttons-wrapper">
                     <button id="btn-volver">
                         <a href="/dashboard">Volver</a>
@@ -24,7 +25,6 @@ const ClientesForm = () => {
                     </button>
                 </div>
                 <br />
-                <h1>Listado Clientes</h1>
                 {clientes.map((cliente, index) => (
                     <section key={cliente.id} className="info-cliente">
                         <p>Id: {cliente.id}</p>

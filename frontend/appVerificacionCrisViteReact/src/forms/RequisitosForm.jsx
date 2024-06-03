@@ -1,29 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-const RevisionesForm = () => {
-    const [revisiones, setRevisiones] = useState([]);
+const Revisiones = () => {
+  const [revisiones, setRevisiones] = useState([]);
 
-    useEffect(() => {
-        fetch('http://localhost:3000/requisitos')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                setRevisiones(data)
-            })
-    }, []);
+  useEffect(() => {
+    fetch('http://localhost:3000/requisitos')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setRevisiones(data);
+      });
+  }, []);
+
   return (
     <main className="revisiones-main">
       <section className="listado-revisiones">
+        <h1>Listado Requisitos</h1>
         <div className="buttons-wrapper">
           <button id="btn-volver">
-              <a href="/dashboard">Volver</a>
+            <a href="/dashboard">Volver</a>
           </button>
           <button>
             <a href="/requisitos/crear-requisito">Crear Requisito</a>
           </button>
         </div>
         <br />
-        <h1>Listado Requisitos</h1>
         {revisiones.map((revision, index) => (
           <section key={revision.id} className="info-revision">
             <p>Id: {revision.id}</p>
@@ -34,10 +35,10 @@ const RevisionesForm = () => {
             {/* index !== revisiones.length -1: Comprobar si el elemento actual es el último */}
             {index !== revisiones.length - 1 && <hr />}
           </section>
-        ))}        
+        ))}
       </section>
     </main>
   );
 };
 
-export default RevisionesForm;
+export default Revisiones;
