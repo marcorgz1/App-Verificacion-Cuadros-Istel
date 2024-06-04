@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import * as XLSX from "xlsx";
-import "../App.css";
+import "../App.css"
 
 import UserIcon from "../icons/UserIcon.jsx";
 import PlusIcon from "../icons/PlusIcon.jsx";
-import producto from "../assets/producto.jpg";
+// import producto from "../assets/producto.jpg";
 import { FaCamera } from "react-icons/fa";
 
 const ProductForm = () => {
@@ -64,6 +64,7 @@ const ProductForm = () => {
 
     fetchClientes();
   }, []);
+  
 
   const fetchModelosCliente = async (clienteId) => {
     try {
@@ -179,45 +180,60 @@ const ProductForm = () => {
       if (response.status === 200) {
         alert("Verificación guardada con éxito");
 
-        // Generar PDF
-        const doc = new jsPDF();
-
         // Calcular la posición final antes de las fotos
         const textHeight = 80 + requisitos.length * 10;
         const fotoStartY = textHeight + 10;
 
-        // Configurar el fondo azul
-        doc.setFillColor(0, 0, 255); // Color azul
-        doc.rect(0, 0, doc.internal.pageSize.width, fotoStartY, 'F'); // Dibuja el rectángulo de fondo
+        // Generar PDF
+        const doc = new jsPDF();
 
-        // Configurar el color del texto a blanco
-        doc.setTextColor(255, 255, 255); // Color blanco
+        // Configurar estilos
+        const titleFontSize = 24;
+        const textFontSize = 14;
+        const margin = 20;
+        const marginLeft = 35
+        const lineSpacing = 10;
 
-        doc.text("Verificación de Producto", 10, 10);
-        doc.text(`N° Cuadro: ${form.numeroCuadro}`, 10, 20);
-        doc.text(`Cliente: ${selectedClienteNombre}`, 10, 30);
-        doc.text(`Modelo: ${selectedModeloNombre}`, 10, 40);
+        // Título
+        doc.setFont("helvetica", "bold")
+        doc.setFontSize(titleFontSize)
+        doc.setTextColor(40, 40, 40)
+        doc.text("Verificación de Producto", margin, margin);
+        
+        // Información general
+        doc.setFont("helvetica", "normal")
+        doc.setFontSize(textFontSize);
+        doc.setTextColor(60, 60, 60);
+        let currentY = margin + lineSpacing * 2;
+        doc.text(`N° Cuadro: ${form.numeroCuadro}`, margin, currentY);
+        currentY += lineSpacing;
+        doc.text(`Cliente: ${selectedClienteNombre}`, margin, currentY);
+        currentY += lineSpacing;
+        doc.text(`Modelo: ${selectedModeloNombre}`, margin, currentY);
+        currentY += lineSpacing;
         doc.text(
           `N° Serie interruptor general: ${form.numeroInterruptor}`,
-          10,
-          50
+          margin,
+          currentY
         );
-        doc.text(`Operario: ${userId}`, 10, 60);
+        currentY += lineSpacing;
+        doc.text(`Operario: ${userId}`, margin, currentY);
+        currentY += lineSpacing;
         doc.text(
           `Requisitos cumplidos: ${data.requisitos_cumplidos.join(", ")}`,
-          10,
-          70
+          margin,
+          currentY
         );
 
         // Añadir fotos al PDF
         const fotoWidth = 40;
         const fotoHeight = 40;
-        let x = 10;
+        let x = marginLeft;
         let y = fotoStartY;
         fotos.forEach((foto, index) => {
           if (index % 3 === 0 && index !== 0) {
             y += fotoHeight + 10;
-            x = 10;
+            x = marginLeft;
           }
           doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
@@ -235,7 +251,7 @@ const ProductForm = () => {
       console.error("Error al guardar la verificación:", error);
       alert("Error al guardar la verificación");
     }
-  };
+  }
 
   const openCamera = async () => {
     try {
@@ -350,12 +366,12 @@ const ProductForm = () => {
                 <div className="icono-operario">
                   <UserIcon />
                   <div className="num-operario">
-                    <span>1</span>
+                  <span>-</span>
                   </div>
                 </div>
               </div>
               <div className="foto-producto">
-                <img src={producto} alt="producto" />
+                <img src={fotos[0]} alt="producto" />
               </div>
             </div>
           </div>
@@ -476,7 +492,7 @@ const ProductForm = () => {
         </div>
       </footer>
     </>
-  );
+  )
 };
 
 export default ProductForm;
