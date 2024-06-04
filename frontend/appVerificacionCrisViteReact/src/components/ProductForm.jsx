@@ -181,6 +181,18 @@ const ProductForm = () => {
 
         // Generar PDF
         const doc = new jsPDF();
+
+        // Calcular la posición final antes de las fotos
+        const textHeight = 80 + requisitos.length * 10;
+        const fotoStartY = textHeight + 10;
+
+        // Configurar el fondo azul
+        doc.setFillColor(0, 0, 255); // Color azul
+        doc.rect(0, 0, doc.internal.pageSize.width, fotoStartY, 'F'); // Dibuja el rectángulo de fondo
+
+        // Configurar el color del texto a blanco
+        doc.setTextColor(255, 255, 255); // Color blanco
+
         doc.text("Verificación de Producto", 10, 10);
         doc.text(`N° Cuadro: ${form.numeroCuadro}`, 10, 20);
         doc.text(`Cliente: ${selectedClienteNombre}`, 10, 30);
@@ -201,7 +213,7 @@ const ProductForm = () => {
         const fotoWidth = 40;
         const fotoHeight = 40;
         let x = 10;
-        let y = 80 + requisitos.length * 10;
+        let y = fotoStartY;
         fotos.forEach((foto, index) => {
           if (index % 3 === 0 && index !== 0) {
             y += fotoHeight + 10;
@@ -250,12 +262,12 @@ const ProductForm = () => {
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
     const newPhoto = canvas.toDataURL("image/png");
-    const photoName = `foto${contadorFotos + 1}.png`;
+    const nombre_foto = `foto${contadorFotos + 1}.png`;
     setFotos((prevPhotos) => [...prevPhotos, newPhoto]);
-    setNombresFotos((prevNames) => [...prevNames, photoName]);
+    setNombresFotos((prevNames) => [...prevNames, nombre_foto]);
     setContadorFotos(contadorFotos + 1);
 
-    if (contadorFotos + 1 > maxFotos) {
+    if (contadorFotos + 1 >= maxFotos) {
       stopCamera();
       alert("No se pueden tomar más fotos");
     }
