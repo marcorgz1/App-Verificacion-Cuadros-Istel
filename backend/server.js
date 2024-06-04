@@ -123,7 +123,7 @@ app.post('/verificaciones', (req, res) => {
   const requisitosCumplidosTodos = Object.values(requisitos_cumplidos).every(value => value) ? 1 : 0;
 
   const sql = 'INSERT INTO verificaciones (id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitos_cumplidos, imagenes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitosCumplidosTodos, JSON.stringify(nombre_fotos)];
+  const values = [id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitosCumplidosTodos, JSON.stringify(imagenes)];
 
   db.query(sql, values, (err, result) => {
     if (err) {
