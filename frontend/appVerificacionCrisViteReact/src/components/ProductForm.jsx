@@ -250,9 +250,9 @@ const ProductForm = () => {
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
     const newPhoto = canvas.toDataURL("image/png");
-    const photoName = `foto${contadorFotos + 1}.png`;
+    const nombre_foto = `foto${contadorFotos + 1}.png`;
     setFotos((prevPhotos) => [...prevPhotos, newPhoto]);
-    setNombresFotos((prevNames) => [...prevNames, photoName]);
+    setNombresFotos((prevNames) => [...prevNames, nombre_foto]);
     setContadorFotos(contadorFotos + 1);
 
     if (contadorFotos + 1 > maxFotos) {
