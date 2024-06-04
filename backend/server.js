@@ -82,6 +82,16 @@ app.get('/modelos', (req, res) => {
   });
 });
 
+app.get('/requisitos', (req, res) => {
+  db.query('SELECT * FROM requisitos', (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
 app.get('/requisitos/:idModelo', (req, res) => {
   const { idModelo } = req.params;
   db.query('SELECT * FROM requisitos WHERE id_modelo = ?', [idModelo], (err, results) => {
