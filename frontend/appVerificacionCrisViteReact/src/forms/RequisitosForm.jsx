@@ -4,7 +4,7 @@ const Revisiones = () => {
   const [revisiones, setRevisiones] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/requisitos')
+    fetch('http://localhost:3001/requisitos')
       .then(response => response.json())
       .then(data => {
         console.log(data);

@@ -4,7 +4,7 @@ const VerificacionesForm = () => {
     const [verificaciones, setVerificaciones] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:3000/verificaciones')
+        fetch('http://localhost:3001/verificaciones')
             .then(response => response.json())
             .then(data => {
                 console.log(data)

@@ -4,7 +4,7 @@ const ModelosForm = () => {
     const [modelos, setModelos] = useState([])
 
     useEffect(() => {
-        fetch('http://localhost:3000/modelos')
+        fetch('http://localhost:3001/modelos')
             .then(response => response.json())
             .then(data => {
                 console.log(data)

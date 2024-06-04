@@ -4,7 +4,7 @@ const UsuariosForm = () => {
     const [usuarios, setusuarios] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:3000/usuarios')
+        fetch('http://localhost:3001/usuarios')
             .then(response => response.json())
             .then(data => {
                 console.log(data)

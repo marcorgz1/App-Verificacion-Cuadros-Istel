@@ -10,7 +10,7 @@ const CrearModeloForm = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        fetch('http://localhost:3000/modelos', {
+        fetch('http://localhost:3001/modelos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

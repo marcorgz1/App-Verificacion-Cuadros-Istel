@@ -10,7 +10,7 @@ const CrearRequisitoForm = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        fetch('http://localhost:3000/requisitos', {
+        fetch('http://localhost:3001/requisitos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

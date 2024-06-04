@@ -4,7 +4,7 @@ const ClientesForm = () => {
     const [clientes, setClientes] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:3000/clientes')
+        fetch('http://localhost:3001/clientes')
             .then(response => response.json())
             .then(data => {
                 console.log(data)

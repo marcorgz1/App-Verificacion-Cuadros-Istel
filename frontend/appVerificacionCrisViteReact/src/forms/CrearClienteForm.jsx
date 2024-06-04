@@ -10,7 +10,7 @@ const CrearClienteForm = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        fetch('http://localhost:3000/clientes', {
+        fetch('http://localhost:3001/clientes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

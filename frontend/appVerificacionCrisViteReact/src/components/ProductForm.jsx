@@ -10,38 +10,44 @@ import producto from "../assets/producto.jpg";
 import { FaCamera } from "react-icons/fa";
 
 const ProductForm = () => {
+  // ESTADOS
   const [clientes, setClientes] = useState([]);
   const [modelos, setModelos] = useState([]);
   const [requisitos, setRequisitos] = useState([]);
-  const [selectedCliente, setSelectedCliente] = useState('');
-  const [selectedClienteNombre, setSelectedClienteNombre] = useState('');
-  const [selectedModelo, setSelectedModelo] = useState('');
-  const [selectedModeloNombre, setSelectedModeloNombre] = useState('');
+  const [selectedCliente, setSelectedCliente] = useState("");
+  const [selectedClienteNombre, setSelectedClienteNombre] = useState("");
+  const [selectedModelo, setSelectedModelo] = useState("");
+  const [selectedModeloNombre, setSelectedModeloNombre] = useState("");
   const [form, setForm] = useState({
-    numeroCuadro: '',
-    numeroInterruptor: ''
+    numeroCuadro: "",
+    numeroInterruptor: "",
   });
   const [requisitosCumplidos, setRequisitosCumplidos] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [userId, setUserId] = useState(null);
-
   const [fotos, setFotos] = useState([]);
   const [nombresFotos, setNombresFotos] = useState([]);
-  const videoRef = useRef(null);
   const [contadorFotos, setContadorFotos] = useState(0);
+  const [clientesAdicionales, setClientesAdicionales] = useState([]);
   const maxFotos = 6;
+  const videoRef = useRef(null);
   const [stream, setStream] = useState(null);
 
   const añadirClientes = () => {
-    if (clientes.length < 3) {
-      setClientes(prevClientes => [...prevClientes, { id: prevClientes.length + 1 }]);
+    if (clientesAdicionales.length < clientes.length - 1) {
+      setClientesAdicionales([
+        ...clientesAdicionales,
+        clientes[clientesAdicionales.length + 1],
+      ]);
+    } else {
+      alert("ERROR: No se pueden agregar más clientes");
     }
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
       setUserId(decodedToken.id);
     }
   }, []);
@@ -49,10 +55,10 @@ const ProductForm = () => {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const result = await axios.get('http://localhost:3001/clientes');
-        setClientes(result.data);
+        const response = await axios.get("http://localhost:3001/clientes");
+        setClientes(response.data);
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        console.error("Error fetching clients:", error);
       }
     };
 
@@ -63,12 +69,12 @@ const ProductForm = () => {
     try {
       const result = await axios.get(`http://localhost:3001/modelos`, {
         params: {
-          clienteId: clienteId
-        }
+          clienteId: clienteId,
+        },
       });
       setModelos(result.data);
     } catch (error) {
-      console.error('Error fetching models for client:', error);
+      console.error("Error fetching models for client:", error);
     }
   };
 
@@ -82,15 +88,17 @@ const ProductForm = () => {
 
   const fetchRequisitos = async (modeloId) => {
     try {
-      const result = await axios.get(`http://localhost:3001/requisitos/${modeloId}`);
+      const result = await axios.get(
+        `http://localhost:3001/requisitos/${modeloId}`
+      );
       setRequisitos(result.data);
       const initialRequisitos = {};
-      result.data.forEach(requisito => {
+      result.data.forEach((requisito) => {
         initialRequisitos[requisito.id] = false;
       });
       setRequisitosCumplidos(initialRequisitos);
     } catch (error) {
-      console.error('Error fetching requirements:', error);
+      console.error("Error fetching requirements:", error);
     }
   };
 
@@ -99,8 +107,8 @@ const ProductForm = () => {
     const clienteNombre = e.target.options[e.target.selectedIndex].text;
     setSelectedCliente(clienteId);
     setSelectedClienteNombre(clienteNombre);
-    setSelectedModelo('');
-    setSelectedModeloNombre('');
+    setSelectedModelo("");
+    setSelectedModeloNombre("");
   };
 
   const handleModeloChange = (e) => {
@@ -113,22 +121,24 @@ const ProductForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (name.startsWith('requisito_')) {
-      const requisitoId = name.split('_')[1];
-      setRequisitosCumplidos(prevState => ({
+    if (name.startsWith("requisito_")) {
+      const requisitoId = name.split("_")[1];
+      setRequisitosCumplidos((prevState) => ({
         ...prevState,
         [requisitoId]: checked,
       }));
     } else {
       setForm((prevForm) => ({
         ...prevForm,
-        [name]: type === 'checkbox' ? checked : value,
+        [name]: type === "checkbox" ? checked : value,
       }));
     }
   };
 
   useEffect(() => {
-    const allChecked = Object.values(requisitosCumplidos).every(value => value);
+    const allChecked = Object.values(requisitosCumplidos).every(
+      (value) => value
+    );
     setIsButtonDisabled(!allChecked);
   }, [requisitosCumplidos]);
 
@@ -136,10 +146,10 @@ const ProductForm = () => {
     e.preventDefault();
     try {
       if (!selectedCliente || !selectedModelo) {
-        alert('Por favor, selecciona un cliente y un modelo.');
+        alert("Por favor, selecciona un cliente y un modelo.");
         return;
       }
-  
+
       const data = {
         ...form,
         id_usuario: userId,
@@ -147,68 +157,73 @@ const ProductForm = () => {
         nombre_cliente: selectedClienteNombre,
         id_modelo: selectedModelo,
         nombre_modelo: selectedModeloNombre,
-        requisitos_cumplidos: requisitos.filter(r => requisitosCumplidos[r.id]).map(r => r.nombre_requisito),
-        nombre_fotos: nombresFotos
-        };
-        
+        requisitos_cumplidos: requisitos
+          .filter((r) => requisitosCumplidos[r.id])
+          .map((r) => r.nombre_requisito),
+        nombre_fotos: nombresFotos,
+      };
+
       const excelData = {
         ...data,
-        requisitos_cumplidos: data.requisitos_cumplidos.join(', '),
-        nombre_fotos: data.nombre_fotos.join(', ')
-      }
-  
-      console.log('Datos enviados:', data, excelData);
-  
-      const response = await axios.post('http://localhost:3001/verificaciones', data);
-  
+        requisitos_cumplidos: data.requisitos_cumplidos.join(", "),
+        nombre_fotos: data.nombre_fotos.join(", "),
+      };
+
+      console.log("Datos enviados:", data, excelData);
+
+      const response = await axios.post(
+        "http://localhost:3001/verificaciones",
+        data
+      );
+
       if (response.status === 200) {
-        alert('Verificación guardada con éxito');
-  
+        alert("Verificación guardada con éxito");
+
         // Generar PDF
         const doc = new jsPDF();
-        doc.text('Verificación de Producto', 10, 10);
+        doc.text("Verificación de Producto", 10, 10);
         doc.text(`N° Cuadro: ${form.numeroCuadro}`, 10, 20);
         doc.text(`Cliente: ${selectedClienteNombre}`, 10, 30);
         doc.text(`Modelo: ${selectedModeloNombre}`, 10, 40);
-        doc.text(`N° Serie interruptor general: ${form.numeroInterruptor}`, 10, 50);
+        doc.text(
+          `N° Serie interruptor general: ${form.numeroInterruptor}`,
+          10,
+          50
+        );
         doc.text(`Operario: ${userId}`, 10, 60);
-        doc.text(`Requisitos cumplidos: ${data.requisitos_cumplidos.join(', ')}`, 10, 70);
-        
+        doc.text(
+          `Requisitos cumplidos: ${data.requisitos_cumplidos.join(", ")}`,
+          10,
+          70
+        );
+
         // Añadir fotos al PDF
         const fotoWidth = 40;
         const fotoHeight = 40;
         let x = 10;
-        let y = 80 + (requisitos.length * 10);
+        let y = 80 + requisitos.length * 10;
         fotos.forEach((foto, index) => {
           if (index % 3 === 0 && index !== 0) {
             y += fotoHeight + 10;
             x = 10;
           }
-          doc.addImage(foto, 'JPEG', x, y, fotoWidth, fotoHeight);
+          doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
         });
-  
-        doc.save('verificacion_producto.pdf');
-  
+
+        doc.save("verificacion_producto.pdf");
+
         // Generar Excel
         const worksheet = XLSX.utils.json_to_sheet([excelData]);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Verificaciones');
-        XLSX.writeFile(workbook, 'verificacion_producto.xlsx');
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Verificaciones");
+        XLSX.writeFile(workbook, "verificacion_producto.xlsx");
       }
     } catch (error) {
-      console.error('Error al guardar la verificación:', error);
-      alert('Error al guardar la verificación');
+      console.error("Error al guardar la verificación:", error);
+      alert("Error al guardar la verificación");
     }
   };
-
-  // const handleRequisitoChange = (id, checked) => {
-  //   setRequisitos(prevRequisitos => 
-  //     prevRequisitos.map(requisito =>
-  //       requisito.id === id ? { ...requisito, cumplido: checked } : requisito
-  //     )
-  //   );
-  // };
 
   const openCamera = async () => {
     try {
@@ -235,7 +250,7 @@ const ProductForm = () => {
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
     const newPhoto = canvas.toDataURL("image/png");
-    const photoName = `${contadorFotos + 1}.png`;
+    const photoName = `foto${contadorFotos + 1}.png`;
     setFotos((prevPhotos) => [...prevPhotos, newPhoto]);
     setNombresFotos((prevNames) => [...prevNames, photoName]);
     setContadorFotos(contadorFotos + 1);
@@ -292,9 +307,7 @@ const ProductForm = () => {
                 value={selectedCliente}
                 onChange={handleClienteChange}
               >
-                <option value="seleccionarCliente">
-                  Selecciona un cliente
-                </option>
+                <option value="">Selecciona un cliente</option>
                 {clientes.map((cliente) => (
                   <option key={cliente.id} value={cliente.id}>
                     {cliente.nombre_cliente}
@@ -350,18 +363,38 @@ const ProductForm = () => {
                 />
               </div>
               <div className="numSerie-clientes">
-                {clientes
-                  .map(cliente => (
-                    <div key={cliente.id} className="numSerie-cliente-adicional">
-                      <label htmlFor={`numSerie-cliente${cliente.id}`}>Nº Cliente {cliente.id}</label>
-                      <input
-                        type="text"
-                        name="numSerieClientes"
-                        size={15}
-                        id={`numSerie-cliente${cliente.id}`}
-                      />
-                    </div>
-                  ))}
+                {clientes.slice(0, 1).map((cliente) => (
+                  <div
+                    key={`numSerie-cliente${cliente.id}`}
+                    className="numSerie-cliente"
+                  >
+                    <label htmlFor={`numSerie-cliente${cliente.id}`}>
+                      Nº Serie Cliente {cliente.id}
+                    </label>
+                    <input
+                      type="text"
+                      name="numSerie-cliente"
+                      size={15}
+                      id={`numSerie-cliente${cliente.id}`}
+                    />
+                  </div>
+                ))}
+                {clientesAdicionales.map((cliente) => (
+                  <div
+                    key={`numSerie-cliente${cliente.id}`}
+                    className="numSerie-cliente"
+                  >
+                    <label htmlFor={`numSerie-cliente${cliente.id}`}>
+                      Nº Serie Cliente {cliente.id}
+                    </label>
+                    <input
+                      type="text"
+                      name="numSerie-cliente"
+                      size={15}
+                      id={`numSerie-cliente${cliente.id}`}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -373,60 +406,63 @@ const ProductForm = () => {
           </div>
         </section>
         <section className="revisiones">
-        {requisitos.map((requisito) => (
-          <div key={requisito.id} className="checkbox-wrapper">
+          {requisitos.map((requisito) => (
+            <div key={requisito.id} className="checkbox-wrapper">
               <span className="number">{requisito.id}</span>
               <label className="name-input">{requisito.nombre_requisito}</label>
               <input
-                  type="checkbox"
-                  className="styled-checkbox"
-                  id={`checkbox_${requisito.id}`}
-                  name={`requisito_${requisito.id}`}
-                  checked={requisitosCumplidos[requisito.id] || false}
-                  onChange={(e) => handleInputChange(e)}
+                type="checkbox"
+                className="styled-checkbox"
+                id={`checkbox_${requisito.id}`}
+                name={`requisito_${requisito.id}`}
+                checked={requisitosCumplidos[requisito.id] || false}
+                onChange={(e) => handleInputChange(e)}
               />
-              <label htmlFor={`checkbox_${requisito.id}`} className="checkbox-label"></label>
-          </div>
-        ))}
+              <label
+                htmlFor={`checkbox_${requisito.id}`}
+                className="checkbox-label"
+              ></label>
+            </div>
+          ))}
         </section>
-        <footer>
-          <div className="fotos">
-            <div className="fotos-tomadas">
-              {Array.isArray(fotos) &&
-                fotos.map((foto, index) => (
-                  <img
-                    key={index}
-                    src={foto}
-                    alt={`Foto ${index + 1}`}
-                    style={{
-                      marginLeft: "15px",
-                      width: "80px",
-                      height: "75px",
-                      objectFit: "cover",
-                    }}
-                  />
-                ))}
-            </div>
-            <div className="camera-icon-wrapper">
-              {fotos.length < maxFotos && (
-                <div className="camera">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    style={{
-                      display:
-                        videoRef.current && videoRef.current.srcObject
-                          ? "block"
-                          : "none",
-                    }}
-                  ></video>
-                </div>
-              )}
-            </div>
-            <FaCamera className="camera-icon" onClick={handleCameraClick} />
-          </div>          
-        </footer>
       </main>
+      <footer>
+        <div className="fotos">
+          <div className="fotos-tomadas">
+            {Array.isArray(fotos) &&
+              fotos.map((foto, index) => (
+                <img
+                  key={index}
+                  src={foto}
+                  alt={`Foto ${index + 1}`}
+                  style={{
+                    marginLeft: "15px",
+                    width: "80px",
+                    height: "75px",
+                    objectFit: "cover",
+                  }}
+                />
+              ))}
+          </div>
+          <div className="camera-icon-wrapper">
+            {fotos.length < maxFotos && (
+              <div className="camera">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  style={{
+                    display:
+                      videoRef.current && videoRef.current.srcObject
+                        ? "block"
+                        : "none",
+                  }}
+                ></video>
+              </div>
+            )}
+          </div>
+          <FaCamera className="camera-icon" onClick={handleCameraClick} />
+        </div>
+      </footer>
     </>
   );
 };
