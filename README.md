@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Istel Logo](./src/assets/logo-istel.png)
+![Istel Logo](./frontend/appVerificacionCrisViteReact/src/assets/logo-istel.png)
 # Proyecto Sistema de Verificación de Cuadros
 
 </div>
@@ -13,13 +13,13 @@
 
 <br />
 
-![Interface screenshot](image-2.png)
+![Interface Screenshot](image.png)
 
 <br />
 
 ## 🖥️👤 Interfaz Login
 
-![Login Interface Screenshot](image-3.png)
+![Login Interface Screenshot](image-1.png)
 
 [Ver App](./src/App.jsx)
 
