@@ -5,11 +5,13 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
-const e = require('express');
+const multer = require('multer');
+const { jsPDF } = require('jspdf');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+const upload = multer();
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -26,17 +28,6 @@ db.connect(err => {
   console.log('Connected to the MySQL server.');
 });
 
-// Ruta para servir el archivo Excel
-app.get('/excel', (req, res) => {
-  const filePath = path.join(__dirname, 'verificaciones.xlsx');
-  if (fs.existsSync(filePath)) {
-    res.sendFile(filePath);
-  } else {
-    res.status(404).send('El archivo no existe');
-  }
-});
-
-// Registro de usuario
 app.post('/register', (req, res) => {
   const { nombre_usuario, clave_secreta } = req.body;
   db.query('INSERT INTO usuarios (nombre_usuario, clave_secreta) VALUES (?, ?)', [nombre_usuario, clave_secreta], (err, result) => {
@@ -48,7 +39,6 @@ app.post('/register', (req, res) => {
   });
 });
 
-// Login de usuario
 app.post('/login', (req, res) => {
   const { nombre_usuario, clave_secreta } = req.body;
   db.query('SELECT * FROM usuarios WHERE nombre_usuario = ?', [nombre_usuario], (err, results) => {
@@ -68,7 +58,6 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Obtener clientes
 app.get('/clientes', (req, res) => {
   db.query('SELECT * FROM clientes', (err, results) => {
     if (err) {
@@ -79,55 +68,20 @@ app.get('/clientes', (req, res) => {
   });
 });
 
-// Crear nuevo cliente
-app.post('/clientes', (req, res) => {
-  const { nombre_cliente } = req.body;
-  db.query('INSERT INTO clientes (nombre_cliente) VALUES (?)', [nombre_cliente], (err, result) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send(result);
-    }
-  });
-});
-
-// Obtener modelos
 app.get('/modelos', (req, res) => {
-  db.query('SELECT * FROM modelos', (err, results) => {
+  const id_cliente = req.query.clienteId;
+  const sql = 'SELECT * FROM modelos WHERE id_cliente = ?';
+  db.query(sql, [id_cliente], (err, results) => {
     if (err) {
+      console.error('Error ejecutando la consulta:', err);
       res.status(500).send(err);
     } else {
+      console.log('Modelos obtenidos:', results);
       res.status(200).json(results);
     }
   });
 });
 
-// Crear nuevo modelo
-app.post('/modelos', (req, res) => {
-  const { nombre_modelo } = req.body;
-  db.query('INSERT INTO modelos (nombre_modelo) VALUES (?)', [nombre_modelo], (err, result) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send(result);
-    }    
-  })
-})
-
-// Obtener Requisitos
-
-app.get('/requisitos', (req, res) => {
-  const { idModelo } = req.params;
-  db.query('SELECT * FROM requisitos', (err, results) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).json(results);
-    }
-  });
-});
-
-// Obtener requisitos por modelo
 app.get('/requisitos/:idModelo', (req, res) => {
   const { idModelo } = req.params;
   db.query('SELECT * FROM requisitos WHERE id_modelo = ?', [idModelo], (err, results) => {
@@ -139,20 +93,6 @@ app.get('/requisitos/:idModelo', (req, res) => {
   });
 });
 
-// Crear nuevo requisito
-
-app.post('/requisitos', (req, res) => {
-  const { nombre_requisito } = req.body;
-  db.query('INSERT INTO requisitos (nombre_requisito, id_modelo) VALUES (?)', [nombre_requisito], (err, result) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send(result);
-    }    
-  })
-})
-
-// Obtener usuarios
 app.get('/usuarios', (req, res) => {
   db.query('SELECT * FROM usuarios', (err, results) => {
     if (err) {
@@ -183,7 +123,7 @@ app.post('/verificaciones', (req, res) => {
   const requisitosCumplidosTodos = Object.values(requisitos_cumplidos).every(value => value) ? 1 : 0;
 
   const sql = 'INSERT INTO verificaciones (id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitos_cumplidos, imagenes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitosCumplidosTodos, JSON.stringify(imagenes)];
+  const values = [id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitosCumplidosTodos, JSON.stringify(nombre_fotos)];
 
   db.query(sql, values, (err, result) => {
     if (err) {
@@ -195,6 +135,38 @@ app.post('/verificaciones', (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.get('/excel', (req, res) => {
+  const filePath = path.join(__dirname, 'verificaciones.xlsx');
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send('El archivo no existe');
+  }
+});
+
+app.post('/upload-excel', upload.none(), (req, res) => {
+  const filePath = path.join(__dirname, 'verificaciones.xlsx');
+
+  let workbook;
+  if (fs.existsSync(filePath)) {
+    const fileBuffer = fs.readFileSync(filePath);
+    workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  } else {
+    workbook = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([[
+      'N° Cuadro', 'Cliente', 'Modelo', 'N° Serie interruptor general', 'N° Cliente', 'Operario', 'Requisitos cumplidos', 'Fotos'
+    ]]);
+    XLSX.utils.book_append_sheet(workbook, ws, 'Verificaciones');
+  }
+
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+  const newRow = JSON.parse(req.body.newRow);
+  XLSX.utils.sheet_add_json(worksheet, [newRow], { skipHeader: true, origin: -1 });
+
+  XLSX.writeFile(workbook, filePath);
+  res.status(200).send('Archivo Excel actualizado con éxito');
+});
+
+app.listen(3001, () => {
+  console.log('Server running on port 3001');
 });
