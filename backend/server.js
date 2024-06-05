@@ -6,7 +6,6 @@ const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
 const multer = require('multer');
-const { jsPDF } = require('jspdf');
 
 const app = express();
 app.use(cors());
@@ -126,14 +125,27 @@ app.get('/verificaciones', (req, res) => {
 
 // Guardar verificación de producto
 app.post('/verificaciones', (req, res) => {
-  const { id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitos_cumplidos, imagenes } = req.body;
+  const { id_usuario, id_cliente, id_modelo, numeroCuadro, numeroInterruptor, numeroCliente1, numeroCliente2, numeroCliente3, numeroCliente4, numeroCliente5, requisitos_cumplidos, imagenes } = req.body;
 
   console.log('Datos recibidos para guardar la verificación:', req.body);
 
-  const requisitosCumplidosTodos = Object.values(requisitos_cumplidos).every(value => value) ? 1 : 0;
+  const cantidadRequisitosCumplidos = Object.values(requisitos_cumplidos).filter(value => value).length;
 
-  const sql = 'INSERT INTO verificaciones (id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitos_cumplidos, imagenes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, requisitosCumplidosTodos, JSON.stringify(imagenes)];
+  const sql = 'INSERT INTO verificaciones (id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, numero_cliente2, numero_cliente3, numero_cliente4, numero_cliente5, requisitos_cumplidos, imagenes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [
+    id_usuario || null,
+    id_cliente || null,
+    id_modelo || null,
+    numeroCuadro || null,
+    numeroInterruptor || null,
+    numeroCliente1 || null,
+    numeroCliente2 || null,
+    numeroCliente3 || null,
+    numeroCliente4 || null,
+    numeroCliente5 || null,
+    cantidadRequisitosCumplidos,
+    imagenes ? JSON.stringify(imagenes) : null
+  ];
 
   db.query(sql, values, (err, result) => {
     if (err) {

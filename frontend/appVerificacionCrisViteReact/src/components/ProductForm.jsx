@@ -2,14 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import * as XLSX from "xlsx";
-import "../App.css"
+import "../App.css";
 
 import UserIcon from "../icons/UserIcon.jsx";
 import PlusIcon from "../icons/PlusIcon.jsx";
-// import producto from "../assets/producto.jpg";
 import { FaCamera } from "react-icons/fa";
 
 const ProductForm = () => {
+  const maxClientes = 5;
+
   // ESTADOS
   const [clientes, setClientes] = useState([]);
   const [modelos, setModelos] = useState([]);
@@ -21,6 +22,11 @@ const ProductForm = () => {
   const [form, setForm] = useState({
     numeroCuadro: "",
     numeroInterruptor: "",
+    numeroCliente1: "",
+    numeroCliente2: "",
+    numeroCliente3: "",
+    numeroCliente4: "",
+    numeroCliente5: ""
   });
   const [requisitosCumplidos, setRequisitosCumplidos] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -34,11 +40,8 @@ const ProductForm = () => {
   const [stream, setStream] = useState(null);
 
   const añadirClientes = () => {
-    if (clientesAdicionales.length < clientes.length - 1) {
-      setClientesAdicionales([
-        ...clientesAdicionales,
-        clientes[clientesAdicionales.length + 1],
-      ]);
+    if (clientesAdicionales.length < maxClientes - 1) {
+      setClientesAdicionales([...clientesAdicionales, { id: clientesAdicionales.length + 2 }]);
     } else {
       alert("ERROR: No se pueden agregar más clientes");
     }
@@ -64,7 +67,6 @@ const ProductForm = () => {
 
     fetchClientes();
   }, []);
-  
 
   const fetchModelosCliente = async (clienteId) => {
     try {
@@ -155,22 +157,12 @@ const ProductForm = () => {
         ...form,
         id_usuario: userId,
         id_cliente: selectedCliente,
-        nombre_cliente: selectedClienteNombre,
         id_modelo: selectedModelo,
-        nombre_modelo: selectedModeloNombre,
-        requisitos_cumplidos: requisitos
-          .filter((r) => requisitosCumplidos[r.id])
-          .map((r) => r.nombre_requisito),
-        nombre_fotos: nombresFotos,
+        requisitos_cumplidos: requisitosCumplidos,
+        imagenes: nombresFotos,
       };
 
-      const excelData = {
-        ...data,
-        requisitos_cumplidos: data.requisitos_cumplidos.join(", "),
-        nombre_fotos: data.nombre_fotos.join(", "),
-      };
-
-      console.log("Datos enviados:", data, excelData);
+      console.log("Datos enviados:", data);
 
       const response = await axios.post(
         "http://localhost:3001/verificaciones",
@@ -191,17 +183,17 @@ const ProductForm = () => {
         const titleFontSize = 24;
         const textFontSize = 14;
         const margin = 20;
-        const marginLeft = 35
+        const marginLeft = 35;
         const lineSpacing = 10;
 
         // Título
-        doc.setFont("helvetica", "bold")
-        doc.setFontSize(titleFontSize)
-        doc.setTextColor(40, 40, 40)
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(titleFontSize);
+        doc.setTextColor(40, 40, 40);
         doc.text("Verificación de Producto", margin, margin);
-        
+
         // Información general
-        doc.setFont("helvetica", "normal")
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(textFontSize);
         doc.setTextColor(60, 60, 60);
         let currentY = margin + lineSpacing * 2;
@@ -220,7 +212,9 @@ const ProductForm = () => {
         doc.text(`Operario: ${userId}`, margin, currentY);
         currentY += lineSpacing;
         doc.text(
-          `Requisitos cumplidos: ${data.requisitos_cumplidos.join(", ")}`,
+          `Requisitos cumplidos: ${Object.keys(requisitosCumplidos)
+            .filter((key) => requisitosCumplidos[key])
+            .join(", ")}`,
           margin,
           currentY
         );
@@ -242,6 +236,18 @@ const ProductForm = () => {
         doc.save("verificacion_producto.pdf");
 
         // Generar Excel
+        const excelData = {
+          "N° Cuadro": form.numeroCuadro,
+          Cliente: selectedClienteNombre,
+          Modelo: selectedModeloNombre,
+          "N° Serie interruptor general": form.numeroInterruptor,
+          Operario: userId,
+          "Requisitos cumplidos": Object.keys(requisitosCumplidos)
+            .filter((key) => requisitosCumplidos[key])
+            .join(", "),
+          Imágenes: nombresFotos.join(", "),
+        };
+
         const worksheet = XLSX.utils.json_to_sheet([excelData]);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Verificaciones");
@@ -251,7 +257,7 @@ const ProductForm = () => {
       console.error("Error al guardar la verificación:", error);
       alert("Error al guardar la verificación");
     }
-  }
+  };
 
   const openCamera = async () => {
     try {
@@ -356,6 +362,43 @@ const ProductForm = () => {
                   </option>
                 ))}
               </select>
+              <br />
+              <label htmlFor="numSerieIntGeneral">
+                Nº Serie Interruptor General
+              </label>
+              <input
+                type="text"
+                name="numeroInterruptor"
+                size={15}
+                className="inputs-clientes"
+                value={form.numeroInterruptor}
+                onChange={handleInputChange}
+              />
+              <br />
+              <label htmlFor="numSerieCliente1">Nº Serie Cliente 1</label>
+              <input
+                type="text"
+                name="numeroCliente1"
+                size={15}
+                value={form.numeroCliente1}
+                onChange={handleInputChange}
+              />
+              <br />
+              {clientesAdicionales.map((cliente) => (
+                <div key={cliente.id}>
+                  <label htmlFor={`numSerieCliente${cliente.id}`}>
+                    Nº Serie Cliente {cliente.id}
+                  </label>
+                  <input
+                    type="text"
+                    name={`numeroCliente${cliente.id}`}
+                    size={15}
+                    value={form[`numeroCliente${cliente.id}`]}
+                    onChange={handleInputChange}
+                  />
+                  <br />
+                </div>
+              ))}
               <button type="submit" disabled={isButtonDisabled}>
                 Generar PDF/Añadir Excel
               </button>
@@ -366,63 +409,12 @@ const ProductForm = () => {
                 <div className="icono-operario">
                   <UserIcon />
                   <div className="num-operario">
-                  <span>-</span>
+                    <span>-</span>
                   </div>
                 </div>
               </div>
               <div className="foto-producto">
                 <img src={fotos[0]} alt="producto" />
-              </div>
-            </div>
-          </div>
-          <div className="campos-clientes">
-            <div className="numSeries-clientes">
-              <div className="numSerieIntGeneral">
-                <label htmlFor="numSerieIntGeneral">
-                  Nº Serie Interruptor General
-                </label>
-                <input
-                  type="text"
-                  name="numeroInterruptor"
-                  size={15}
-                  className="inputs-clientes"
-                  value={form.numeroInterruptor}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="numSerie-clientes">
-                {clientes.slice(0, 1).map((cliente) => (
-                  <div
-                    key={`numSerie-cliente${cliente.id}`}
-                    className="numSerie-cliente"
-                  >
-                    <label htmlFor={`numSerie-cliente${cliente.id}`}>
-                      Nº Serie Cliente {cliente.id}
-                    </label>
-                    <input
-                      type="text"
-                      name="numSerie-cliente"
-                      size={15}
-                      id={`numSerie-cliente${cliente.id}`}
-                    />
-                  </div>
-                ))}
-                {clientesAdicionales.map((cliente) => (
-                  <div
-                    key={`numSerie-cliente${cliente.id}`}
-                    className="numSerie-cliente"
-                  >
-                    <label htmlFor={`numSerie-cliente${cliente.id}`}>
-                      Nº Serie Cliente {cliente.id}
-                    </label>
-                    <input
-                      type="text"
-                      name="numSerie-cliente"
-                      size={15}
-                      id={`numSerie-cliente${cliente.id}`}
-                    />
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -492,7 +484,7 @@ const ProductForm = () => {
         </div>
       </footer>
     </>
-  )
+  );
 };
 
 export default ProductForm;
