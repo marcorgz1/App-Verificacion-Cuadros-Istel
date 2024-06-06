@@ -50,10 +50,10 @@ form label {
 
 input {
   background: #fff;
-  height: 20px;
+  width: 195px;
+  height: 25px;
   border-radius: 15px;
-  margin-left: 10px;
-  padding: 5px;  
+  margin-left: 10px; 
 }
 
 select {
@@ -67,7 +67,7 @@ select {
   background-position: right 10px center;
   background-size: 15px;
   margin: 15px 0 0 30px;
-  width: 350px;
+  width: 260px;
   height: 30px;
   padding-left: 15px;
 }
@@ -161,6 +161,10 @@ form button:hover {
   padding: 5px;
 }
 
+#numeroCliente {
+  margin-top: 10px;
+}
+
 .foto-producto img {
   width: 135px;
   margin-top: 15px;
@@ -168,24 +172,7 @@ form button:hover {
   border: 4px solid #56bd9b;
   border-radius: 40px;
   padding: 10px;
-}
-
-.numSeries-clientes {
-  display: flex;
-  gap: 55px;
-  align-items: center;
   margin-top: 30px;
-
-}
-
-.numSerie-clientes {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.campos-clientes input {
-  color: #000;
 }
 
 .cliente-adicional {
@@ -348,14 +335,9 @@ video {
 .container-img {
   position: absolute;
   top: 3%;
-  left: 40%;
   margin: auto;
   background: #fff;
   border-radius: 50%;
-}
-
-.container-img img {
-  width: 220px;
 }
 
 .remember-wrapper {
@@ -476,14 +458,14 @@ video {
 .container-img {
   position: absolute;
   top: 6%;
-  left: 40%;
+  left: 37%;
   margin: auto;
   background: #fff;
   border-radius: 50%;
 }
 
 .container-img img {
-  width: 220px;
+  width: 210px;
 }
 
 .remember-wrapper {
@@ -607,10 +589,6 @@ video {
 
 .admin-main button:hover {
   color: #56bd9b;
-}
-
-.btn-salir:hover {
-  background: #ff0000;
 }
 
 .app-main {

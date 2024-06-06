@@ -362,35 +362,39 @@ const ProductForm = () => {
                   </option>
                 ))}
               </select>
+              <br />              
+              <button type="submit" disabled={isButtonDisabled}>
+                Generar PDF/Añadir Excel
+              </button>
               <br />
-              <label htmlFor="numSerieIntGeneral">
-                Nº Serie Interruptor General
-              </label>
-              <input
-                type="text"
-                name="numeroInterruptor"
-                size={15}
-                className="inputs-clientes"
-                value={form.numeroInterruptor}
-                onChange={handleInputChange}
-              />
               <br />
-              <label htmlFor="numSerieCliente1">Nº Serie Cliente 1</label>
-              <input
-                type="text"
-                name="numeroCliente1"
-                size={15}
-                value={form.numeroCliente1}
-                onChange={handleInputChange}
-              />
-              <br />
-              {clientesAdicionales.map((cliente) => (
+              <div className="num-series">
+                <label htmlFor="numSerieIntGeneral">Nº Serie Interruptor General:</label>
+                <input
+                  type="text"
+                  name="numeroInterruptor"
+                  size={15}
+                  value={form.numeroInterruptor}
+                  onChange={handleInputChange}
+                />
+                <br />
+                <br />
+                <label htmlFor="numSerieCliente1">Nº Serie Cliente 1:</label>
+                <input
+                  type="text"
+                  name="numeroCliente1"
+                  size={15}
+                  value={form.numeroCliente1}
+                  onChange={handleInputChange}
+                />
+                {clientesAdicionales.map((cliente) => (
                 <div key={cliente.id}>
                   <label htmlFor={`numSerieCliente${cliente.id}`}>
                     Nº Serie Cliente {cliente.id}
                   </label>
                   <input
                     type="text"
+                    id="numeroCliente"
                     name={`numeroCliente${cliente.id}`}
                     size={15}
                     value={form[`numeroCliente${cliente.id}`]}
@@ -399,9 +403,7 @@ const ProductForm = () => {
                   <br />
                 </div>
               ))}
-              <button type="submit" disabled={isButtonDisabled}>
-                Generar PDF/Añadir Excel
-              </button>
+              </div>
             </form>
             <div className="operario-foto-producto">
               <div className="operario">

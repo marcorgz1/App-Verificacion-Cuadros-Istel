@@ -19,7 +19,7 @@ const AdminHome = ({ adminName }) => {
             {table}
           </button>
         ))}
-      <button className='btn-salir' onClick={handleLogout}>Salir</button>
+      <button onClick={handleLogout}>Salir</button>
     </main>
   );
 };
