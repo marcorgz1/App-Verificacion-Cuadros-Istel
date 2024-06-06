@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from 'react-router-dom';
 
 import LockIcon from "../icons/LockIcon.jsx";
 import UsersIcon from "../icons/UsersIcon.jsx";
@@ -72,7 +72,7 @@ const LoginForm = ({ onLogin }) => {
                 />
                 <span className="txt-p">Recuérdame</span>
               </div>
-                <a href="/admin">Inicio sesión admin</a>
+              <Link to="/admin-login">Login de Administrador</Link>
             </div>
           </div>
           <div className="container-form3">

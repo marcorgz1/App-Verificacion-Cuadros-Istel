@@ -27,6 +27,7 @@ db.connect(err => {
   console.log('Connected to the MySQL server.');
 });
 
+// Rutas de autenticación y registro de usuarios
 app.post('/register', (req, res) => {
   const { nombre_usuario, clave_secreta } = req.body;
   db.query('INSERT INTO usuarios (nombre_usuario, clave_secreta) VALUES (?, ?)', [nombre_usuario, clave_secreta], (err, result) => {
@@ -57,8 +58,138 @@ app.post('/login', (req, res) => {
   });
 });
 
+app.post('/admin-login', (req, res) => {
+  const { nombre_admin, contraseña } = req.body;
+  db.query('SELECT * FROM administrador WHERE nombre_admin = ? AND contraseña = ?', [nombre_admin, contraseña], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else if (results.length > 0) {
+      const token = jwt.sign({ id: results[0].id }, 'secret_key', { expiresIn: '1h' });
+      res.status(200).json({ token });
+    } else {
+      res.status(401).send('Invalid credentials');
+    }
+  });
+});
+
+// Ruta para obtener los nombres de las columnas de una tabla específica
+app.get('/columns/:tableName', (req, res) => {
+  const { tableName } = req.params;
+  const sql = `SHOW COLUMNS FROM ??`;
+  db.query(sql, [tableName], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      const columns = results.map(column => column.Field);
+      res.status(200).json(columns);
+    }
+  });
+});
+
+// Rutas para administradores
+app.get('/administrador', (req, res) => {
+  db.query('SELECT * FROM administrador', (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+app.post('/administrador', (req, res) => {
+  const { nombre_admin, contraseña } = req.body;
+  db.query('INSERT INTO administrador (nombre_admin, contraseña) VALUES (?, ?)', [nombre_admin, contraseña], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(201).send('Administrador creado');
+    }
+  });
+});
+
+app.put('/administrador/:id', (req, res) => {
+  const { id } = req.params;
+  const { nombre_admin, contraseña } = req.body;
+  db.query('UPDATE administrador SET nombre_admin = ?, contraseña = ? WHERE id = ?', [nombre_admin, contraseña, id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Administrador actualizado');
+    }
+  });
+});
+
+app.delete('/administrador/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM administrador WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Administrador eliminado');
+    }
+  });
+});
+
+// Rutas para clientes
 app.get('/clientes', (req, res) => {
   db.query('SELECT * FROM clientes', (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+app.post('/clientes', (req, res) => {
+  const { nombre_cliente } = req.body;
+  db.query('INSERT INTO clientes (nombre_cliente) VALUES (?)', [nombre_cliente], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(201).send('Cliente creado');
+    }
+  });
+});
+
+app.put('/clientes/:id', (req, res) => {
+  const { id } = req.params;
+  const { nombre_cliente } = req.body;
+  db.query('UPDATE clientes SET nombre_cliente = ? WHERE id = ?', [nombre_cliente, id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Cliente actualizado');
+    }
+  });
+});
+
+app.delete('/clientes/:id', (req, res) => {
+  const { id } = req.params;
+
+  // Primero, eliminar los modelos asociados al cliente
+  db.query('DELETE FROM modelos WHERE id_cliente = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Error al eliminar modelos asociados:', err); // Registro detallado del error
+      res.status(500).send(err);
+    } else {
+      // Luego, eliminar el cliente
+      db.query('DELETE FROM clientes WHERE id = ?', [id], (err, results) => {
+        if (err) {
+          console.error('Error al eliminar el cliente:', err); // Registro detallado del error
+          res.status(500).send(err);
+        } else {
+          res.status(200).send('Cliente eliminado');
+        }
+      });
+    }
+  });
+});
+
+// Rutas para modelos
+app.get('/modelos', (req, res) => {
+  db.query('SELECT * FROM modelos', (err, results) => {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -72,15 +203,60 @@ app.get('/modelos', (req, res) => {
   const sql = 'SELECT * FROM modelos WHERE id_cliente = ?';
   db.query(sql, [id_cliente], (err, results) => {
     if (err) {
-      console.error('Error ejecutando la consulta:', err);
       res.status(500).send(err);
     } else {
-      console.log('Modelos obtenidos:', results);
       res.status(200).json(results);
     }
   });
 });
 
+// Obtener todos los modelos sin importar el id_cliente (para el admin)
+app.get('/admin/modelos', (req, res) => {
+  const sql = 'SELECT * FROM modelos';
+  db.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+app.post('/modelos', (req, res) => {
+  const { nombre_modelo, id_cliente } = req.body;
+  db.query('INSERT INTO modelos (nombre_modelo, id_cliente) VALUES (?, ?)', [nombre_modelo, id_cliente], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(201).send('Modelo creado');
+    }
+  });
+});
+
+app.put('/modelos/:id', (req, res) => {
+  const { id } = req.params;
+  const { nombre_modelo, id_cliente } = req.body;
+  db.query('UPDATE modelos SET nombre_modelo = ?, id_cliente = ? WHERE id = ?', [nombre_modelo, id_cliente, id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Modelo actualizado');
+    }
+  });
+});
+
+app.delete('/modelos/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM modelos WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Modelo eliminado');
+    }
+  });
+});
+
+// Rutas para requisitos
 app.get('/requisitos', (req, res) => {
   db.query('SELECT * FROM requisitos', (err, results) => {
     if (err) {
@@ -102,6 +278,41 @@ app.get('/requisitos/:idModelo', (req, res) => {
   });
 });
 
+app.post('/requisitos', (req, res) => {
+  const { id_modelo, nombre_requisito } = req.body;
+  db.query('INSERT INTO requisitos (id_modelo, nombre_requisito) VALUES (?, ?)', [id_modelo, nombre_requisito], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(201).send('Requisito creado');
+    }
+  });
+});
+
+app.put('/requisitos/:id', (req, res) => {
+  const { id } = req.params;
+  const { id_modelo, nombre_requisito } = req.body;
+  db.query('UPDATE requisitos SET id_modelo = ?, nombre_requisito = ? WHERE id = ?', [id_modelo, nombre_requisito, id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Requisito actualizado');
+    }
+  });
+});
+
+app.delete('/requisitos/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM requisitos WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Requisito eliminado');
+    }
+  });
+});
+
+// Rutas para usuarios
 app.get('/usuarios', (req, res) => {
   db.query('SELECT * FROM usuarios', (err, results) => {
     if (err) {
@@ -112,7 +323,41 @@ app.get('/usuarios', (req, res) => {
   });
 });
 
-// Obtener verificaciones
+app.post('/usuarios', (req, res) => {
+  const { nombre_usuario, clave_secreta, recuerdame } = req.body;
+  db.query('INSERT INTO usuarios (nombre_usuario, clave_secreta, recuerdame) VALUES (?, ?, ?)', [nombre_usuario, clave_secreta, recuerdame], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(201).send('Usuario creado');
+    }
+  });
+});
+
+app.put('/usuarios/:id', (req, res) => {
+  const { id } = req.params;
+  const { nombre_usuario, clave_secreta, recuerdame } = req.body;
+  db.query('UPDATE usuarios SET nombre_usuario = ?, clave_secreta = ?, recuerdame = ? WHERE id = ?', [nombre_usuario, clave_secreta, recuerdame, id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Usuario actualizado');
+    }
+  });
+});
+
+app.delete('/usuarios/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM usuarios WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Usuario eliminado');
+    }
+  });
+});
+
+// Rutas para verificaciones
 app.get('/verificaciones', (req, res) => {
   db.query('SELECT * FROM verificaciones', (err, results) => {
     if (err) {
@@ -121,31 +366,154 @@ app.get('/verificaciones', (req, res) => {
       res.status(200).json(results);
     }
   });
-})
+});
 
-// Guardar verificación de producto
+// app.post('/verificaciones', (req, res) => {
+//   const {
+//     id_usuario, id_cliente, id_modelo,
+//     numeroCuadro, numeroInterruptor,
+//     numeroCliente1, numeroCliente2,
+//     numeroCliente3, numeroCliente4,
+//     numeroCliente5, requisitos_cumplidos,
+//     imagenes
+//   } = req.body;
+
+//   console.log('Datos recibidos para guardar la verificación:', req.body);
+
+//   const cantidadRequisitosCumplidos = Object.values(requisitos_cumplidos).filter(value => value).length;
+
+//   const sql = `
+//     INSERT INTO verificaciones (
+//       id_usuario, id_cliente, id_modelo,
+//       numero_cuadro, numero_interruptor,
+//       numero_cliente, numero_cliente2,
+//       numero_cliente3, numero_cliente4,
+//       numero_cliente5, requisitos_cumplidos, imagenes
+//     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//   `;
+//   const values = [
+//     id_usuario || null,
+//     id_cliente || null,
+//     id_modelo || null,
+//     numeroCuadro || null,
+//     numeroInterruptor || null,
+//     numeroCliente1 || null,
+//     numeroCliente2 || null,
+//     numeroCliente3 || null,
+//     numeroCliente4 || null,
+//     numeroCliente5 || null,
+//     cantidadRequisitosCumplidos,
+//     imagenes ? JSON.stringify(imagenes) : null
+//   ];
+
+//   db.query(sql, values, (err, result) => {
+//     if (err) {
+//       console.error('Error al guardar la verificación en la base de datos:', err);
+//       res.status(500).send('Error al guardar la verificación');
+//     } else {
+//       res.status(200).send(result);
+//     }
+//   });
+// });
+
+app.put('/verificaciones/:id', (req, res) => {
+  const { id } = req.params;
+  const {
+    id_usuario, id_cliente, id_modelo,
+    numeroCuadro, numeroInterruptor,
+    numeroCliente1, numeroCliente2,
+    numeroCliente3, numeroCliente4,
+    numeroCliente5, requisitos_cumplidos, imagenes
+  } = req.body;
+
+  const sql = `
+    UPDATE verificaciones SET
+      id_usuario = ?, id_cliente = ?, id_modelo = ?,
+      numero_cuadro = ?, numero_interruptor = ?,
+      numero_cliente = ?, numero_cliente2 = ?,
+      numero_cliente3 = ?, numero_cliente4 = ?,
+      numero_cliente5 = ?, requisitos_cumplidos = ?, imagenes = ?
+    WHERE id = ?
+  `;
+  const values = [
+    id_usuario, id_cliente, id_modelo,
+    numeroCuadro, numeroInterruptor,
+    numeroCliente1, numeroCliente2,
+    numeroCliente3, numeroCliente4,
+    numeroCliente5, requisitos_cumplidos, imagenes, id
+  ];
+
+  db.query(sql, values, (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Verificación actualizada');
+    }
+  });
+});
+
+app.delete('/verificaciones/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM verificaciones WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Verificación eliminada');
+    }
+  });
+});
+
+// Ruta para obtener un elemento específico
+app.get('/:type/:id', (req, res) => {
+  const { type, id } = req.params;
+  const sql = `SELECT * FROM ${type} WHERE id = ?`;
+  db.query(sql, [id], (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+});
+
 app.post('/verificaciones', (req, res) => {
-  const { id_usuario, id_cliente, id_modelo, numeroCuadro, numeroInterruptor, numeroCliente1, numeroCliente2, numeroCliente3, numeroCliente4, numeroCliente5, requisitos_cumplidos, imagenes } = req.body;
+  const {
+    id_usuario, id_cliente, id_modelo,
+    numero_cuadro, numero_interruptor,
+    numero_cliente, numero_cliente2,
+    numero_cliente3, numero_cliente4,
+    numero_cliente5, requisitos_cumplidos,
+    imagenes, fecha
+  } = req.body;
 
   console.log('Datos recibidos para guardar la verificación:', req.body);
 
-  const cantidadRequisitosCumplidos = Object.values(requisitos_cumplidos).filter(value => value).length;
+  const cantidadRequisitosCumplidos = parseInt(requisitos_cumplidos, 10) || 0;
+  const fechaActual = fecha || new Date().toISOString();
 
-  const sql = 'INSERT INTO verificaciones (id_usuario, id_cliente, id_modelo, numero_cuadro, numero_interruptor, numero_cliente, numero_cliente2, numero_cliente3, numero_cliente4, numero_cliente5, requisitos_cumplidos, imagenes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const sql = `
+    INSERT INTO verificaciones (
+      id_usuario, id_cliente, id_modelo,
+      numero_cuadro, numero_interruptor,
+      numero_cliente, numero_cliente2,
+      numero_cliente3, numero_cliente4,
+      numero_cliente5, requisitos_cumplidos, imagenes, fecha
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
   const values = [
     id_usuario || null,
     id_cliente || null,
     id_modelo || null,
-    numeroCuadro || null,
-    numeroInterruptor || null,
-    numeroCliente1 || null,
-    numeroCliente2 || null,
-    numeroCliente3 || null,
-    numeroCliente4 || null,
-    numeroCliente5 || null,
+    numero_cuadro || '',
+    numero_interruptor || '',
+    numero_cliente || '',
+    numero_cliente2 || '',
+    numero_cliente3 || '',
+    numero_cliente4 || '',
+    numero_cliente5 || '',
     cantidadRequisitosCumplidos,
-    imagenes ? JSON.stringify(imagenes) : null
+    imagenes ? JSON.stringify(imagenes) : null,
+    fechaActual
   ];
+
+  console.log('Valores a insertar:', values);
 
   db.query(sql, values, (err, result) => {
     if (err) {
@@ -157,37 +525,7 @@ app.post('/verificaciones', (req, res) => {
   });
 });
 
-app.get('/excel', (req, res) => {
-  const filePath = path.join(__dirname, 'verificaciones.xlsx');
-  if (fs.existsSync(filePath)) {
-    res.sendFile(filePath);
-  } else {
-    res.status(404).send('El archivo no existe');
-  }
-});
 
-app.post('/upload-excel', upload.none(), (req, res) => {
-  const filePath = path.join(__dirname, 'verificaciones.xlsx');
-
-  let workbook;
-  if (fs.existsSync(filePath)) {
-    const fileBuffer = fs.readFileSync(filePath);
-    workbook = XLSX.read(fileBuffer, { type: 'buffer' });
-  } else {
-    workbook = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet([[
-      'N° Cuadro', 'Cliente', 'Modelo', 'N° Serie interruptor general', 'N° Cliente', 'Operario', 'Requisitos cumplidos', 'Fotos'
-    ]]);
-    XLSX.utils.book_append_sheet(workbook, ws, 'Verificaciones');
-  }
-
-  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-  const newRow = JSON.parse(req.body.newRow);
-  XLSX.utils.sheet_add_json(worksheet, [newRow], { skipHeader: true, origin: -1 });
-
-  XLSX.writeFile(workbook, filePath);
-  res.status(200).send('Archivo Excel actualizado con éxito');
-});
 
 app.listen(3001, () => {
   console.log('Server running on port 3001');

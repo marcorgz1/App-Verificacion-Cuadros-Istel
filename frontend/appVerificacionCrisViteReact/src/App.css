@@ -53,6 +53,7 @@ input {
   height: 20px;
   border-radius: 15px;
   margin-left: 10px;
+  padding: 5px;  
 }
 
 select {
@@ -400,8 +401,14 @@ video {
   margin: 20px 10px;
 }
 
+#error-login-admin {
+  color: #ff0000;
+  font-size: 1em;
+}
+
 .volver a {
   font-family: "Avenir", sans-serif;
+  margin-top: 30px;
 }
 
 .i-is:focus {
@@ -441,287 +448,325 @@ video {
   color: rgb(180, 180, 180);
 }
 
+/* Login Admin */
+
+.login-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #23305e;
+  height: 100vh;  
+}
+
+.form-is {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 35px;
+  font-family: 'Onest';
+}
+
+.container-form2 a {
+  color: #23305e;
+}
+
+.container-img {
+  position: absolute;
+  top: 6%;
+  left: 40%;
+  margin: auto;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.container-img img {
+  width: 220px;
+}
+
+.remember-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 40px;
+  gap: 70px;
+}
+
+.remember-wrapper a {
+  font-family: "Avenir", sans-serif;
+}
+
+#container-check {
+  display: flex;
+  align-items: center;
+}
+
+#txt-t {
+  color:#23305e;
+  font-size: 35px;
+  letter-spacing: 5px;
+  font-family: 'Avenir', sans-serif;
+  font-weight: 600;
+}
+
+.i-is {
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  width: 300px; 
+  height: 50px;
+  background: none;
+  color: #000;
+}
+
+.icon {
+  margin-right: 25px;
+  color: #23305e;
+}
+
+.volver {
+  margin: 20px 10px;
+}
+
+#error-login-admin {
+  color: #ff0000;
+  font-size: 1em;
+}
+
+.volver a {
+  font-family: "Avenir", sans-serif;
+  margin-top: 30px;
+}
+
+.i-is:focus {
+  outline: none;
+}
+
+.i-f {
+  margin-bottom: 10px;
+  border: 3px solid #56bd9b;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+}
+
+#i-ch {
+  width: 40px;
+  height: 20px;
+}
+
+.container-form3 {
+  margin-top: 20px;
+}
+
+#btn-conectar {
+  color: #23305e;
+  background-color: #56bd9b;
+  font-weight: bold;
+  border: 5px solid #23305e;
+  border-radius: 20px;
+  font-size: 30px;
+  width: 300px;
+  -webkit-text-stroke: 1.5px #fff;
+  margin-top: 15px;
+}
+
+.txt-p {
+  color: rgb(180, 180, 180);
+}
+
+.remember-wrapper a {
+  color: #23305e;
+}
+
 /* Panel Admin */
 
 .admin-main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  
-}
-
-.admin-main section {
-  padding: 20px;
   background: #23305e;
-  width: 40%;
-  }
+  width: 80%;
+  margin: 300px auto;
+  padding: 20px;
+}
   
 .admin-main h1 {
   font-family: 'Viga', sans-serif;
-  margin-left: 20px;
   font-size: 36px;
 }
     
-.admin-main section ul {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  font-size: 20px;
-}
-
-.admin-main section ul a {
+.admin-main button {
+  display: block;
+  margin-bottom: 15px;
   color: #fff;
-  text-decoration: none;  
+  background: none;
+  border: 0;
+  font-size: 1.2em;
+  cursor: pointer;
+  text-align: left;
 }
 
-.admin-main section ul a:hover {
+.admin-main button:hover {
   color: #56bd9b;
 }
 
-/* Listados */
-
-.listado-clientes, .listado-modelos, .listado-revisiones, .listado-usuarios, .listado-verificaciones {
-  background: #23305e;
-  padding: 25px;
-  width: 70%;
-}
-
-.listado-clientes h1, .listado-modelos h1, .listado-revisiones h1, .listado-usuarios h1, .listado-verificaciones h1 {
-  text-align: center;
-  font-size: 48px;
-}
-
-.buttons-wrapper {
-  display: flex;
-  justify-content: center;
-  gap: 75px;
-  margin-top: 40px;
-}
-
-#btn-volver {
+.btn-salir:hover {
   background: #ff0000;
 }
 
-#btn-volver:hover {
-  background: #bd0000;
-}
-
-/* Listado clientes */
-
-.clientes-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  height: 100vh;
-  }
-
-.info-cliente p {
-  color: #fff;
-}
-
-.listado-clientes button {
-  margin-top: 15px;
-  background: #56bd9b;
-  padding: 15px;
-  color: #fff;
-  font-weight: bold;
-  border: 0;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.listado-clientes button a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 20px;
-}
-
-.listado-clientes button:hover {
-  background: #00CB7F;
-}
-
-/* Crear Cliente */
-
-.crear-cliente-main {
-  width: 80%;
-  text-align: center;
-  margin: 350px auto;
-}
-
-.crear-cliente {
+main {
   background: #23305e;
-  padding: 25px;
-}
-
-.crear-cliente h2 {
-  font-family: 'Avenir', sans-serif;
-}
-
-#btn-crear-cliente {
-  display: flex;
-  margin: auto;
-  margin-top: 45px;
-  background: #56bd9b;
-  padding: 15px;
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-  border: 0;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-#btn-volver a {
-  color: #fff;
-  font-size: 16px;
-  text-decoration: none;
-}
-
-#btn-crear-cliente:hover {
-  background: #00CB7F;
-}
-
-/* Listado modelos */
-
-.modelos-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  height: 100vh;
-  }
-
-.info-modelo p {
-  color: #fff;
-}
-
-.listado-modelos button {
-  margin-top: 15px;
-  background: #56bd9b;
-  padding: 15px;
-  color: #fff;
-  font-weight: bold;
-  border: 0;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.listado-modelos button a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 20px;
-}
-
-.listado-modelos button:hover {
-  background: #00CB7F;
-}
-/* Listado revisiones */
-
-.revisiones-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
+  width: 85%;
+  margin: 50px auto;
   padding: 20px;
 }
 
-.info-revision p {
-  color: #fff;
+main h1 {
+  font-family: 'Viga', sans-serif;
+  font-size: 36px;
 }
 
-.listado-revisiones button {
-  margin-top: 15px;
-  background: #56bd9b;
-  padding: 15px;
-  color: #fff;
-  font-weight: bold;
-  border: 0;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.listado-revisiones button a {
+main a {
   color: #fff;
   text-decoration: none;
-  font-size: 20px;
 }
 
-.listado-revisiones button:hover {
-  background: #00CB7F;
+main a:hover {
+  color: #56bd9b;
 }
 
-/* Listado usuarios */
+.tabla-data {
+  overflow-x: auto;
+}
 
-.usuarios-main {
+.tabla-data table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-data th, .tabla-data td {
+  padding: 25px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.tabla-data th, .tabla-data tr:nth-child(even) {
+  background: #007851;
+}
+
+.tabla-data button {  
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 5px;
+  margin: 25px 15px;
+  cursor: pointer;  
+}
+
+.btn-crear-editar {
+  background: #56bd9b;
+}
+
+.btn-crear-editar:hover {
+  background: #00BE8D;
+}
+
+.create-main button {
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 5px;
+  margin: 25px 15px;
+  cursor: pointer; 
+}
+
+.btn-eliminar {
+  background: #ff0000;
+}
+
+.btn-eliminar:hover {
+  background: #B00000;
+}
+
+/* Formularios crear y editar */
+
+.form-crear, .form-editar {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-  height: 100vh;
-  }
-
-.info-usuario p {
-  color: #fff;
+  place-items: center;
+  gap: 15px;
 }
 
-.listado-usuarios button {
-  margin-top: 15px;
-  background: #56bd9b;
-  padding: 15px;
-  color: #fff;
+.btn-crear-editar, .btn-eliminar {
+  padding: 10px 20px;
+  font-size: 18px;
   font-weight: bold;
-  border: 0;
-  border-radius: 20px;
+  border: none;
+  border-radius: 25px;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
-.listado-usuarios button a {
+.btn-crear-editar {
+  background: #28a745;
+  color: white;
+}
+
+.btn-crear-editar:hover {
+  background: #218838;
+}
+
+.btn-eliminar {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-eliminar:hover {
+  background: #c82333;
+}
+
+/* Formulario Crear */
+
+.create-main {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #23305e;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-main h1 {
+  text-align: center;
   color: #fff;
-  text-decoration: none;
-  font-size: 20px;
+  margin-bottom: 20px;
+  font-size: 24px;
 }
 
-.listado-usuarios button:hover {
-  background: #00CB7F;
-}
 
-/* Listado verificaciones */
 
-.verificaciones-main {
+.input-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
+  gap: 10px;
 }
 
-.info-verificacion p {
-  color: #fff;
+/* Formulario Editar */
+
+.edit-main {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #23305e;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
-.listado-verificaciones button {
-  margin-top: 15px;
-  background: #56bd9b;
-  padding: 15px;
+.edit-main h2 {
+  text-align: center;
   color: #fff;
-  font-weight: bold;
-  border: 0;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.listado-verificaciones button a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 20px;
-}
-
-.listado-verificaciones button:hover {
-  background: #00CB7F;
+  margin-bottom: 20px;
+  font-size: 24px;
 }
