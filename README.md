@@ -21,6 +21,10 @@
 
 ![Login Interface Screenshot](image-1.png)
 
+## 💻👑 Interfaz Admin
+
+![Admin Interface Screenshot](image-2.png)
+
 [Ver App](./src/App.jsx)
 
 <br />
