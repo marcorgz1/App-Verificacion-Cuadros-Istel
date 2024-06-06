@@ -375,111 +375,6 @@ app.get('/verificaciones', (req, res) => {
   });
 });
 
-// app.post('/verificaciones', (req, res) => {
-//   const {
-//     id_usuario, id_cliente, id_modelo,
-//     numeroCuadro, numeroInterruptor,
-//     numeroCliente1, numeroCliente2,
-//     numeroCliente3, numeroCliente4,
-//     numeroCliente5, requisitos_cumplidos,
-//     imagenes
-//   } = req.body;
-
-//   console.log('Datos recibidos para guardar la verificación:', req.body);
-
-//   const cantidadRequisitosCumplidos = Object.values(requisitos_cumplidos).filter(value => value).length;
-
-//   const sql = `
-//     INSERT INTO verificaciones (
-//       id_usuario, id_cliente, id_modelo,
-//       numero_cuadro, numero_interruptor,
-//       numero_cliente, numero_cliente2,
-//       numero_cliente3, numero_cliente4,
-//       numero_cliente5, requisitos_cumplidos, imagenes
-//     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//   `;
-//   const values = [
-//     id_usuario || null,
-//     id_cliente || null,
-//     id_modelo || null,
-//     numeroCuadro || null,
-//     numeroInterruptor || null,
-//     numeroCliente1 || null,
-//     numeroCliente2 || null,
-//     numeroCliente3 || null,
-//     numeroCliente4 || null,
-//     numeroCliente5 || null,
-//     cantidadRequisitosCumplidos,
-//     imagenes ? JSON.stringify(imagenes) : null
-//   ];
-
-//   db.query(sql, values, (err, result) => {
-//     if (err) {
-//       console.error('Error al guardar la verificación en la base de datos:', err);
-//       res.status(500).send('Error al guardar la verificación');
-//     } else {
-//       res.status(200).send(result);
-//     }
-//   });
-// });
-
-app.put('/verificaciones/:id', (req, res) => {
-  const { id } = req.params;
-  const {
-    id_usuario, id_cliente, id_modelo,
-    numeroCuadro, numeroInterruptor,
-    numeroCliente1, numeroCliente2,
-    numeroCliente3, numeroCliente4,
-    numeroCliente5, requisitos_cumplidos, imagenes
-  } = req.body;
-
-  const sql = `
-    UPDATE verificaciones SET
-      id_usuario = ?, id_cliente = ?, id_modelo = ?,
-      numero_cuadro = ?, numero_interruptor = ?,
-      numero_cliente = ?, numero_cliente2 = ?,
-      numero_cliente3 = ?, numero_cliente4 = ?,
-      numero_cliente5 = ?, requisitos_cumplidos = ?, imagenes = ?
-    WHERE id = ?
-  `;
-  const values = [
-    id_usuario, id_cliente, id_modelo,
-    numeroCuadro, numeroInterruptor,
-    numeroCliente1, numeroCliente2,
-    numeroCliente3, numeroCliente4,
-    numeroCliente5, requisitos_cumplidos, imagenes, id
-  ];
-
-  db.query(sql, values, (err, results) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send('Verificación actualizada');
-    }
-  });
-});
-
-app.delete('/verificaciones/:id', (req, res) => {
-  const { id } = req.params;
-  db.query('DELETE FROM verificaciones WHERE id = ?', [id], (err, results) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send('Verificación eliminada');
-    }
-  });
-});
-
-// Ruta para obtener un elemento específico
-app.get('/:type/:id', (req, res) => {
-  const { type, id } = req.params;
-  const sql = `SELECT * FROM ${type} WHERE id = ?`;
-  db.query(sql, [id], (err, result) => {
-    if (err) throw err;
-    res.json(result);
-  });
-});
-
 app.post('/verificaciones', (req, res) => {
   const {
     id_usuario, id_cliente, id_modelo,
@@ -492,7 +387,7 @@ app.post('/verificaciones', (req, res) => {
 
   console.log('Datos recibidos para guardar la verificación:', req.body);
 
-  const cantidadRequisitosCumplidos = parseInt(requisitos_cumplidos, 10) || 0;
+  const cantidadRequisitosCumplidos = Object.values(requisitos_cumplidos).filter(value => value).length;
   const fechaActual = fecha || new Date().toISOString();
 
   const sql = `
@@ -532,7 +427,65 @@ app.post('/verificaciones', (req, res) => {
   });
 });
 
+app.put('/verificaciones/:id', (req, res) => {
+  const { id } = req.params;
+  const {
+    id_usuario, id_cliente, id_modelo,
+    numero_cuadro, numero_interruptor,
+    numero_cliente, numero_cliente2,
+    numero_cliente3, numero_cliente4,
+    numero_cliente5, requisitos_cumplidos, imagenes, fecha
+  } = req.body;
 
+  const cantidadRequisitosCumplidos = Object.values(requisitos_cumplidos).filter(value => value).length;
+  const fechaActual = fecha || new Date().toISOString();
+
+  const sql = `
+    UPDATE verificaciones SET
+      id_usuario = ?, id_cliente = ?, id_modelo = ?,
+      numero_cuadro = ?, numero_interruptor = ?,
+      numero_cliente = ?, numero_cliente2 = ?,
+      numero_cliente3 = ?, numero_cliente4 = ?,
+      numero_cliente5 = ?, requisitos_cumplidos = ?, imagenes = ?, fecha = ?
+    WHERE id = ?
+  `;
+  const values = [
+    id_usuario, id_cliente, id_modelo,
+    numero_cuadro, numero_interruptor,
+    numero_cliente, numero_cliente2,
+    numero_cliente3, numero_cliente4,
+    numero_cliente5, cantidadRequisitosCumplidos, imagenes ? JSON.stringify(imagenes) : null, fechaActual, id
+  ];
+
+  db.query(sql, values, (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Verificación actualizada');
+    }
+  });
+});
+
+app.delete('/verificaciones/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM verificaciones WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Verificación eliminada');
+    }
+  });
+});
+
+// Ruta para obtener un elemento específico
+app.get('/:type/:id', (req, res) => {
+  const { type, id } = req.params;
+  const sql = `SELECT * FROM ${type} WHERE id = ?`;
+  db.query(sql, [id], (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+});
 
 app.listen(3001, () => {
   console.log('Server running on port 3001');

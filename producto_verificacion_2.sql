@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-05-2024 a las 09:34:52
+-- Tiempo de generación: 06-06-2024 a las 12:24:48
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,27 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `producto_verificacion`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `administrador`
+--
+
+CREATE TABLE `administrador` (
+  `id` int(11) NOT NULL,
+  `nombre_admin` varchar(255) NOT NULL,
+  `contraseña` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `administrador`
+--
+
+INSERT INTO `administrador` (`id`, `nombre_admin`, `contraseña`) VALUES
+(1, 'admin1', '1234'),
+(2, 'admin2', '0987'),
+(3, 'admin3', '1230');
 
 -- --------------------------------------------------------
 
@@ -52,19 +73,20 @@ INSERT INTO `clientes` (`id`, `nombre_cliente`) VALUES
 CREATE TABLE `modelos` (
   `id` int(11) NOT NULL,
   `nombre_modelo` varchar(100) NOT NULL,
-  `id_cliente` int(11) DEFAULT NULL
+  `id_cliente` int(11) DEFAULT NULL,
+  `imagen` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `modelos`
 --
 
-INSERT INTO `modelos` (`id`, `nombre_modelo`, `id_cliente`) VALUES
-(1, 'Modelo X', 1),
-(2, 'Modelo Y', 2),
-(3, 'Modelo Z', 1),
-(4, 'Modelo W', 2),
-(5, 'Modelo V', 3);
+INSERT INTO `modelos` (`id`, `nombre_modelo`, `id_cliente`, `imagen`) VALUES
+(1, 'Modelo X', 1, NULL),
+(2, 'Modelo Y', 2, NULL),
+(3, 'Modelo Z', 1, NULL),
+(4, 'Modelo W', 2, NULL),
+(5, 'Modelo V', 3, NULL);
 
 -- --------------------------------------------------------
 
@@ -129,6 +151,10 @@ CREATE TABLE `verificaciones` (
   `numero_cuadro` varchar(50) DEFAULT NULL,
   `numero_interruptor` varchar(50) DEFAULT NULL,
   `numero_cliente` varchar(50) DEFAULT NULL,
+  `numero_cliente2` varchar(50) DEFAULT NULL,
+  `numero_cliente3` varchar(50) DEFAULT NULL,
+  `numero_cliente4` varchar(50) DEFAULT NULL,
+  `numero_cliente5` varchar(50) DEFAULT NULL,
   `requisitos_cumplidos` tinyint(4) DEFAULT NULL,
   `imagenes` longtext DEFAULT NULL,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp()
@@ -138,13 +164,22 @@ CREATE TABLE `verificaciones` (
 -- Volcado de datos para la tabla `verificaciones`
 --
 
-INSERT INTO `verificaciones` (`id`, `id_usuario`, `id_cliente`, `id_modelo`, `numero_cuadro`, `numero_interruptor`, `numero_cliente`, `requisitos_cumplidos`, `imagenes`, `fecha`) VALUES
-(1, 1, 1, 1, NULL, NULL, NULL, 1, '[]', '2024-05-29 12:59:45'),
-(2, 1, 1, 1, NULL, NULL, NULL, 1, '[]', '2024-05-29 14:00:54');
+INSERT INTO `verificaciones` (`id`, `id_usuario`, `id_cliente`, `id_modelo`, `numero_cuadro`, `numero_interruptor`, `numero_cliente`, `numero_cliente2`, `numero_cliente3`, `numero_cliente4`, `numero_cliente5`, `requisitos_cumplidos`, `imagenes`, `fecha`) VALUES
+(1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '[]', '2024-05-29 12:59:45'),
+(2, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '[]', '2024-05-29 14:00:54'),
+(3, 1, 2, 2, '121212', '1212', NULL, NULL, NULL, NULL, NULL, 0, '[]', '2024-06-05 08:09:59'),
+(4, 1, 2, 2, '', '', '', '', '', '', '', 0, '[]', '2024-06-06 06:28:13'),
+(5, 1, 1, 1, '', '', '', '', '', '', '', 0, '[]', '2024-06-06 07:38:06');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `clientes`
@@ -186,6 +221,12 @@ ALTER TABLE `verificaciones`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
@@ -213,7 +254,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `verificaciones`
 --
 ALTER TABLE `verificaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas

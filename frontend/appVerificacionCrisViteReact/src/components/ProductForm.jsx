@@ -40,9 +40,7 @@ const ProductForm = () => {
   const videoRef = useRef(null);
   const [stream, setStream] = useState(null);
 
-
   const [modeloImagen, setModeloImagen] = useState("");
-
 
   const añadirClientes = () => {
     if (clientesAdicionales.length < maxClientes - 1) {
@@ -75,17 +73,16 @@ const ProductForm = () => {
 
   const fetchModelosCliente = async (clienteId) => {
     try {
-        const result = await axios.get(`http://localhost:3001/modelos`, {
-            params: {
-                clienteId: clienteId,
-            },
-        });
-        setModelos(result.data);
+      const result = await axios.get(`http://localhost:3001/modelos`, {
+        params: {
+          clienteId: clienteId,
+        },
+      });
+      setModelos(result.data);
     } catch (error) {
-        console.error("Error fetching models for client:", error);
+      console.error("Error fetching models for client:", error);
     }
-};
-
+  };
 
   useEffect(() => {
     if (selectedCliente) {
@@ -126,14 +123,13 @@ const ProductForm = () => {
     setSelectedModelo(modeloId);
     setSelectedModeloNombre(modeloNombre);
     fetchRequisitos(modeloId);
-    const modeloSeleccionado = modelos.find(modelo => modelo.id === parseInt(modeloId));
+    const modeloSeleccionado = modelos.find((modelo) => modelo.id === parseInt(modeloId));
     if (modeloSeleccionado) {
-        setModeloImagen(modeloSeleccionado.imagen);
+      setModeloImagen(modeloSeleccionado.imagen);
     } else {
-        setModeloImagen("");
+      setModeloImagen("");
     }
-};
-
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -165,23 +161,30 @@ const ProductForm = () => {
         alert("Por favor, selecciona un cliente y un modelo.");
         return;
       }
-  
+
       const data = {
         ...form,
         id_usuario: userId,
         id_cliente: selectedCliente,
         id_modelo: selectedModelo,
+        numero_cuadro: form.numeroCuadro,
+        numero_interruptor: form.numeroInterruptor,
+        numero_cliente: form.numeroCliente1,
+        numero_cliente2: form.numeroCliente2,
+        numero_cliente3: form.numeroCliente3,
+        numero_cliente4: form.numeroCliente4,
+        numero_cliente5: form.numeroCliente5,
         requisitos_cumplidos: requisitosCumplidos,
         imagenes: nombresFotos,
       };
-  
+
       console.log("Datos enviados:", data);
-  
+
       const response = await axios.post("http://localhost:3001/verificaciones", data);
-  
+
       if (response.status === 200) {
         alert("Verificación guardada con éxito");
-  
+
         // Mapear IDs de requisitos cumplidos a sus nombres
         const nombresRequisitosCumplidos = Object.keys(requisitosCumplidos)
           .filter((key) => requisitosCumplidos[key])
@@ -189,15 +192,15 @@ const ProductForm = () => {
             const requisito = requisitos.find((req) => req.id === parseInt(key));
             return requisito ? requisito.nombre_requisito : key;
           });
-  
+
         // Generar PDF
         const doc = new jsPDF();
-  
+
         // Cargar imagen desde el archivo
         const logoUrl = "/src/assets/logo-istel.png";
         const logoImage = new Image();
         logoImage.src = logoUrl;
-  
+
         // Configurar estilos
         const titleFontSize = 24;
         const textFontSize = 12;
@@ -207,37 +210,37 @@ const ProductForm = () => {
         const pageWidth = doc.internal.pageSize.getWidth();
         const logoWidth = 50;
         const logoHeight = 40;
-  
+
         // Añadir logo
         doc.addImage(logoImage, "PNG", (pageWidth - logoWidth) / 2, marginTop, logoWidth, logoHeight);
-  
+
         // Título
         doc.setFont("helvetica", "bold");
         doc.setFontSize(titleFontSize);
         doc.setTextColor(40, 40, 40);
         doc.text("Verificación de Producto", pageWidth / 2, marginTop + logoHeight + 20, { align: "center" });
-  
-        // Información general en tabla
+
+        // Información general y requisitos cumplidos en tabla
         doc.setFont("helvetica", "normal");
         doc.setFontSize(textFontSize);
         doc.setTextColor(60, 60, 60);
         const currentY = marginTop + logoHeight + 40;
-  
+
         const tableData = [
           ["N° Cuadro", form.numeroCuadro],
           ["Cliente", selectedClienteNombre],
           ["Modelo", selectedModeloNombre],
           ["N° Serie interruptor general", form.numeroInterruptor],
           ["Operario", userId],
-          ["Requisitos cumplidos", nombresRequisitosCumplidos.length > 0 ? nombresRequisitosCumplidos.join(", ") : "No se cumplieron requisitos"]
+          ["Requisitos cumplidos", nombresRequisitosCumplidos.length > 0 ? nombresRequisitosCumplidos.join(", ") : "No se cumplieron requisitos"],
         ];
-  
+
         // Añadir tabla
         const startX = margin;
         const startY = currentY;
         const cellPadding = 5;
         const cellWidth = (pageWidth - 2 * margin) / 2;
-  
+
         tableData.forEach((row, rowIndex) => {
           const rowY = startY + rowIndex * (textFontSize + 2 * cellPadding);
           row.forEach((cell, colIndex) => {
@@ -246,27 +249,12 @@ const ProductForm = () => {
             doc.text(cell.toString(), cellX + cellPadding, rowY + textFontSize + cellPadding / 2);
           });
         });
-  
-        // Requisitos cumplidos
-        doc.setFont("helvetica", "bold");
-        doc.text("Requisitos cumplidos:", margin, startY + tableData.length * (textFontSize + 2 * cellPadding) + lineSpacing);
-        doc.setFont("helvetica", "normal");
-        const requisitosStartY = startY + tableData.length * (textFontSize + 2 * cellPadding) + 2 * lineSpacing;
-  
-        if (nombresRequisitosCumplidos.length > 0) {
-          nombresRequisitosCumplidos.forEach((requisito, index) => {
-            const requisitoY = requisitosStartY + index * lineSpacing;
-            doc.text(`- ${requisito}`, margin + 10, requisitoY);
-          });
-        } else {
-          doc.text("No se cumplieron requisitos.", margin + 10, requisitosStartY);
-        }
-  
+
         // Añadir fotos al PDF
-        const fotoWidth = 40;
-        const fotoHeight = 40;
+        const fotoWidth = 20;
+        const fotoHeight = 20;
         let x = margin;
-        let y = requisitosStartY + (nombresRequisitosCumplidos.length + 1) * lineSpacing;
+        let y = startY + tableData.length * (textFontSize + 2 * cellPadding) + lineSpacing;
         fotos.forEach((foto, index) => {
           if (index % 3 === 0 && index !== 0) {
             y += fotoHeight + 10;
@@ -275,9 +263,9 @@ const ProductForm = () => {
           doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
         });
-  
+
         doc.save("verificacion_producto.pdf");
-  
+
         // Generar Excel
         const excelData = {
           "N° Cuadro": form.numeroCuadro,
@@ -288,7 +276,7 @@ const ProductForm = () => {
           "Requisitos cumplidos": nombresRequisitosCumplidos.join(", "),
           Imágenes: nombresFotos.join(", "),
         };
-  
+
         const worksheet = XLSX.utils.json_to_sheet([excelData]);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Verificaciones");
@@ -298,7 +286,7 @@ const ProductForm = () => {
       console.error("Error al guardar la verificación:", error);
       alert("Error al guardar la verificación");
     }
-  }    
+  };
 
   const openCamera = async () => {
     try {
@@ -490,19 +478,18 @@ const ProductForm = () => {
             </form>
             <div className="operario-foto-producto">
               <div className="operario">
-                  <span>Operario</span>
-                  <div className="icono-operario">
-                      <UserIcon />
-                  </div>
+                <span>Operario</span>
+                <div className="icono-operario">
+                  <UserIcon />
+                </div>
               </div>
               <div className="foto-producto">
-                  {modeloImagen && (
-                      <img
-                          src={`http://localhost:3001/uploads/${modeloImagen}`}
-                          alt="Modelo seleccionado"
-                          style={{ width: '100px', height: '100px' }}
-                      />
-                  )}
+                {modeloImagen && (
+                  <img
+                    src={`http://localhost:3001/uploads/${modeloImagen}`}
+                    alt="Modelo seleccionado"
+                  />
+                )}
               </div>
             </div>
           </div>
