@@ -275,7 +275,8 @@ app.get("/admin/modelos", (req, res) => {
   });
 });
 
-app.post("/modelos", upload.single("image"), (req, res) => {
+// Ruta para crear modelos con imagen
+app.post("/modelos", upload.single("imagen"), (req, res) => {
   const { nombre_modelo, id_cliente } = req.body;
   const imageName = req.file ? req.file.filename : null; // Obtener el nombre del archivo subido
   db.query(

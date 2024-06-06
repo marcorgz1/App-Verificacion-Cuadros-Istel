@@ -9,6 +9,7 @@ const CreateForm = () => {
   const [clientes, setClientes] = useState([]);
   const [modelos, setModelos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,7 +65,11 @@ const CreateForm = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.name === 'imagen') {
+      setImageFile(e.target.files[0]); // Actualiza el estado del archivo de imagen
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   const handleCancel = () => {
@@ -73,9 +78,20 @@ const CreateForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting form data:', formData);
+    const formDataToSubmit = new FormData(); // Utiliza FormData para manejar la carga de archivos
+    for (const key in formData) {
+      formDataToSubmit.append(key, formData[key]);
+    }
+    if (imageFile) {
+      formDataToSubmit.append('imagen', imageFile);
+    }
+
     try {
-      await axios.post(`http://localhost:3001/${tableName}`, formData);
+      await axios.post(`http://localhost:3001/${tableName}`, formDataToSubmit, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       navigate(`/admin/${tableName}`);
     } catch (error) {
       console.error('Error creating record:', error);
@@ -94,9 +110,9 @@ const CreateForm = () => {
             <div key={column}>
               <label>{column}:</label>
               <input
-                type="text"
+                type={column === 'imagen' ? 'file' : 'text'}
                 name={column}
-                value={formData[column]}
+                value={column !== 'imagen' ? formData[column] : undefined}
                 onChange={handleChange}
               />
             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-import CreateForm from './CreateForm'; // Asegúrate de que la ruta sea correcta
+import CreateForm from './CreateForm';
 
 const AdminTable = () => {
     const { tableName } = useParams();
@@ -13,42 +13,48 @@ const AdminTable = () => {
     }, [tableName]);
 
     const fetchData = async () => {
-        const endpoint = tableName === 'modelos' ? `http://localhost:3001/admin/${tableName}` : `http://localhost:3001/${tableName}`;
-        const result = await axios.get(endpoint);
-        setData(result.data);
-        if (tableName === 'verificaciones') {
-            const usuarios = await axios.get('http://localhost:3001/usuarios');
-            const clientes = await axios.get('http://localhost:3001/clientes');
-            const modelos = await axios.get('http://localhost:3001/modelos');
-            
-            const usuarioMap = usuarios.data.reduce((map, user) => {
-                map[user.id] = user.nombre_usuario;
-                return map;
-            }, {});
-            
-            const clienteMap = clientes.data.reduce((map, cliente) => {
-                map[cliente.id] = cliente.nombre_cliente;
-                return map;
-            }, {});
-    
-            const modeloMap = modelos.data.reduce((map, modelo) => {
-                map[modelo.id] = modelo.nombre_modelo;
-                return map;
-            }, {});
-    
-            const updatedData = result.data.map(item => ({
-                ...item,
-                id_usuario: usuarioMap[item.id_usuario] || item.id_usuario,
-                id_cliente: clienteMap[item.id_cliente] || item.id_cliente,
-                id_modelo: modeloMap[item.id_modelo] || item.id_modelo,
-            }))
-    
-            setData(updatedData);
-        } else {
-            setData(result.data);
+        try {
+            const endpoint = tableName === 'modelos' ? `http://localhost:3001/admin/${tableName}` : `http://localhost:3001/${tableName}`;
+            const result = await axios.get(endpoint);
+
+            if (tableName === 'verificaciones') {
+                const usuarios = await axios.get('http://localhost:3001/usuarios');
+                const clientes = await axios.get('http://localhost:3001/clientes');
+                const modelos = await axios.get('http://localhost:3001/modelos');
+
+                const usuarioMap = usuarios.data.reduce((map, user) => {
+                    map[user.id] = user.nombre_usuario;
+                    return map;
+                }, {});
+
+                const clienteMap = clientes.data.reduce((map, cliente) => {
+                    map[cliente.id] = cliente.nombre_cliente;
+                    return map;
+                }, {});
+
+                const modeloMap = modelos.data.reduce((map, modelo) => {
+                    map[modelo.id] = modelo.nombre_modelo;
+                    return map;
+                }, {});
+
+                const updatedData = result.data.map(item => {
+                    const { nombre_usuario, nombre_cliente, nombre_modelo, ...filteredItem } = item;
+                    return {
+                        ...filteredItem,
+                        id_usuario: usuarioMap[item.id_usuario] || item.nombre_usuario,
+                        id_cliente: clienteMap[item.id_cliente] || item.nombre_cliente,
+                        id_modelo: modeloMap[item.id_modelo] || item.nombre_modelo
+                    };
+                });
+
+                setData(updatedData);
+            } else {
+                setData(result.data);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
-    };    
-    
+    };
 
     const handleCreate = () => {
         navigate(`/admin/${tableName}/create`);
@@ -88,8 +94,16 @@ const AdminTable = () => {
                                         <tr key={row.id}>
                                             {Object.entries(row).map(([key, value], index) => (
                                                 <td key={index}>
-                                                    {tableName === 'modelos' && key === 'imagen' ? (
-                                                        <img src={value} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
+                                                    {tableName === 'modelos' && key === 'imagen' && value ? (
+                                                        <img src={`http://localhost:3001/uploads/${value}`} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
+                                                    ) : (tableName === 'verificaciones' && key === 'imagenes' && value) ? (
+                                                        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                            {JSON.parse(value).map((img, imgIndex) => (
+                                                                <div key={imgIndex} style={{ flex: '1 0 30%', margin: '5px', width: '200px' }}>
+                                                                    <img src={`http://localhost:3001/uploads/${img}`} alt="Previsualización" style={{ width: '100%', height: 'auto' }} />
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     ) : (
                                                         value
                                                     )}
