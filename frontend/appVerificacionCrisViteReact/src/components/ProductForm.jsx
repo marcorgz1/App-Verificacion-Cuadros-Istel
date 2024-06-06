@@ -7,6 +7,7 @@ import "../App.css";
 import UserIcon from "../icons/UserIcon.jsx";
 import PlusIcon from "../icons/PlusIcon.jsx";
 import { FaCamera } from "react-icons/fa";
+import DeleteIcon from "../icons/DeleteIcon.jsx";
 
 const ProductForm = () => {
   const maxClientes = 5;
@@ -26,7 +27,7 @@ const ProductForm = () => {
     numeroCliente2: "",
     numeroCliente3: "",
     numeroCliente4: "",
-    numeroCliente5: ""
+    numeroCliente5: "",
   });
   const [requisitosCumplidos, setRequisitosCumplidos] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -41,7 +42,10 @@ const ProductForm = () => {
 
   const añadirClientes = () => {
     if (clientesAdicionales.length < maxClientes - 1) {
-      setClientesAdicionales([...clientesAdicionales, { id: clientesAdicionales.length + 2 }]);
+      setClientesAdicionales([
+        ...clientesAdicionales,
+        { id: clientesAdicionales.length + 2 },
+      ]);
     } else {
       alert("ERROR: No se pueden agregar más clientes");
     }
@@ -152,7 +156,7 @@ const ProductForm = () => {
         alert("Por favor, selecciona un cliente y un modelo.");
         return;
       }
-  
+
       const data = {
         ...form,
         id_usuario: userId,
@@ -161,46 +165,48 @@ const ProductForm = () => {
         requisitos_cumplidos: requisitosCumplidos,
         imagenes: nombresFotos,
       };
-  
+
       console.log("Datos enviados:", data);
-  
+
       const response = await axios.post(
         "http://localhost:3001/verificaciones",
         data
       );
-  
+
       if (response.status === 200) {
         alert("Verificación guardada con éxito");
-  
+
         // Mapear IDs de requisitos cumplidos a sus nombres
         const nombresRequisitosCumplidos = Object.keys(requisitosCumplidos)
           .filter((key) => requisitosCumplidos[key])
           .map((key) => {
-            const requisito = requisitos.find((req) => req.id === parseInt(key));
+            const requisito = requisitos.find(
+              (req) => req.id === parseInt(key)
+            );
             return requisito ? requisito.nombre_requisito : key;
           });
-  
+
         // Generar PDF
         const doc = new jsPDF();
-  
+
         // Configurar estilos
         const titleFontSize = 24;
         const textFontSize = 12;
         const margin = 30;
-        const marginTop = 20
+        const marginTop = 20;
         const lineSpacing = 10;
-  
+
         // Título
         doc.setFont("helvetica", "bold");
         doc.setFontSize(titleFontSize);
         doc.setTextColor(40, 40, 40);
         doc.text("Verificación de Producto", margin, marginTop);
-  
+
         // Información general
         doc.setFont("helvetica", "normal");
         doc.setFontSize(textFontSize);
         doc.setTextColor(60, 60, 60);
-        let currentY = margin + lineSpacing
+        let currentY = margin + lineSpacing;
         doc.text(`N° Cuadro: ${form.numeroCuadro}`, margin, currentY);
         currentY += lineSpacing;
         doc.text(`Cliente: ${selectedClienteNombre}`, margin, currentY);
@@ -215,7 +221,7 @@ const ProductForm = () => {
         currentY += lineSpacing;
         doc.text(`Operario: ${userId}`, margin, currentY);
         currentY += lineSpacing;
-  
+
         // Requisitos cumplidos
         if (nombresRequisitosCumplidos.length > 0) {
           doc.text(`Requisitos cumplidos:`, margin, currentY);
@@ -228,7 +234,7 @@ const ProductForm = () => {
           doc.text(`No se cumplieron requisitos.`, margin, currentY);
           currentY += lineSpacing;
         }
-  
+
         // Añadir fotos al PDF
         const fotoWidth = 40;
         const fotoHeight = 40;
@@ -242,9 +248,9 @@ const ProductForm = () => {
           doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
         });
-  
+
         doc.save("verificacion_producto.pdf");
-  
+
         // Generar Excel
         const excelData = {
           "N° Cuadro": form.numeroCuadro,
@@ -255,7 +261,7 @@ const ProductForm = () => {
           "Requisitos cumplidos": nombresRequisitosCumplidos.join(", "),
           Imágenes: nombresFotos.join(", "),
         };
-  
+
         const worksheet = XLSX.utils.json_to_sheet([excelData]);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Verificaciones");
@@ -265,7 +271,7 @@ const ProductForm = () => {
       console.error("Error al guardar la verificación:", error);
       alert("Error al guardar la verificación");
     }
-  };  
+  };
 
   const openCamera = async () => {
     try {
@@ -324,13 +330,43 @@ const ProductForm = () => {
     }
   };
 
+  const handleDelete = (id) => {
+    setForm((prevForm) => {
+      const newForm = { ...prevForm };
+      delete newForm[`numeroCliente${id}`];
+
+      // Recalcular los IDs de los clientes restantes
+      const updatedForm = {};
+      let newId = 1;
+      for (const key in newForm) {
+        if (key.startsWith("numeroCliente")) {
+          updatedForm[`numeroCliente${newId}`] = newForm[key];
+          newId++;
+        } else {
+          updatedForm[key] = newForm[key];
+        }
+      }
+
+      return updatedForm;
+    });
+
+    setClientesAdicionales((prevClientes) => {
+      const updatedClientes = prevClientes.filter(
+        (cliente) => cliente.id !== id
+      );
+
+      // Recalcular los IDs de los clientes restantes
+      return updatedClientes.map((cliente, index) => ({ id: index + 2 }));
+    });
+  };
+
   return (
     <>
       <header>
         <h1>VERIFICACIÓN DE PRODUCTO</h1>
         <img src="src/assets/logo-istel.png" alt="logo Istel" />
       </header>
-      <main className='app-main'>
+      <main className="app-main">
         <section className="formulario">
           <div className="first-section">
             <form onSubmit={handleSubmit}>
@@ -369,11 +405,13 @@ const ProductForm = () => {
                     {modelo.nombre_modelo}
                   </option>
                 ))}
-              </select>              
+              </select>
               <br />
               <br />
               <div className="num-series">
-                <label htmlFor="numSerieIntGeneral">Nº Serie Interruptor General:</label>
+                <label htmlFor="numSerieIntGeneral">
+                  Nº Serie Interruptor General:
+                </label>
                 <input
                   type="text"
                   name="numeroInterruptor"
@@ -392,27 +430,38 @@ const ProductForm = () => {
                   onChange={handleInputChange}
                 />
                 {clientesAdicionales.map((cliente) => (
-                <div key={cliente.id}>
-                  <label htmlFor={`numSerieCliente${cliente.id}`}>
-                    Nº Serie Cliente {cliente.id}:
-                  </label>
-                  <input
-                    type="text"
-                    id="numeroCliente"
-                    name={`numeroCliente${cliente.id}`}
-                    size={15}
-                    value={form[`numeroCliente${cliente.id}`]}
-                    onChange={handleInputChange}
-                  />
-                  <br />
-                </div>
-              ))}
-              </div>              
-              <br />              
-              <button type="submit" disabled={isButtonDisabled}>
+                  <div key={cliente.id} className="numSeries-clientes">
+                    <label htmlFor={`numSerieCliente${cliente.id}`}>
+                      Nº Serie Cliente {cliente.id}:
+                    </label>
+                    <input
+                      type="text"
+                      id={`numSerieCliente${cliente.id}`}
+                      name={`numeroCliente${cliente.id}`}
+                      size={15}
+                      value={form[`numeroCliente${cliente.id}`] || ""}
+                      onChange={handleInputChange}
+                    />
+                    <button
+                      type="button"
+                      className="btn-delete-icon"
+                      onClick={() => handleDelete(cliente.id)}
+                    >
+                      <DeleteIcon />
+                    </button>
+                    <br />
+                  </div>
+                ))}
+              </div>
+              <br />
+              <button
+                type="submit"
+                id="btn-generar"
+                disabled={isButtonDisabled}
+              >
                 Generar PDF/Añadir Excel
               </button>
-            </form>            
+            </form>
             <div className="operario-foto-producto">
               <div className="operario">
                 <span>Operario</span>
@@ -424,18 +473,17 @@ const ProductForm = () => {
                 <img src={fotos[0]} alt="producto" />
               </div>
             </div>
-          </div> 
+          </div>
           <div className="cliente-adicional">
             <button onClick={añadirClientes}>
               <PlusIcon />
             </button>
             <span>Añadir cliente adicional</span>
-          </div>                
+          </div>
         </section>
         <section className="revisiones">
           {requisitos.map((requisito) => (
             <div key={requisito.id} className="checkbox-wrapper">
-              <span className="number">{requisito.id}</span>
               <label className="name-input">{requisito.nombre_requisito}</label>
               <input
                 type="checkbox"
@@ -452,7 +500,6 @@ const ProductForm = () => {
             </div>
           ))}
         </section>
-
       </main>
       <footer>
         <div className="fotos">

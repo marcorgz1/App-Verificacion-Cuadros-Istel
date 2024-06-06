@@ -9,6 +9,9 @@ const CreateForm = () => {
   const [clientes, setClientes] = useState([]);
   const [modelos, setModelos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [image, setImage] = useState(null); // Estado para manejar la imagen
+  const [imagePreview, setImagePreview] = useState(null); // Estado para la vista previa de la imagen
+  const [imageName, setImageName] = useState(''); // Estado para el nombre de la imagen
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,24 +70,61 @@ const CreateForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    setImageName(file.name);
+
+    // Crear una vista previa de la imagen
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const handleCancel = () => {
     navigate(`/admin/${tableName}`);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Datos enviados:', formData);  // Registro de depuración
-    try {
-        const url = tableName === 'verificaciones' 
-            ? 'http://localhost:3001/admin/verificaciones' 
-            : `http://localhost:3001/${tableName}`;
-        await axios.post(url, formData);
-        navigate(`/admin/${tableName}`);
-    } catch (error) {
-        console.error('Error creating record:', error);
+    const formDataWithImage = new FormData();
+
+    Object.keys(formData).forEach((key) => {
+      formDataWithImage.append(key, formData[key]);
+    });
+
+    if (image) {
+      formDataWithImage.append('image', image);
+      formDataWithImage.append('imageName', imageName); // Añadir el nombre de la imagen al formData
     }
-};
+
+    // Convertir formData a objeto para depuración
+    const debugObject = {};
+    formDataWithImage.forEach((value, key) => {
+      debugObject[key] = value;
+    });
+
+    console.log('Datos enviados:', debugObject);  // Registro de depuración
+    try {
+      const url = tableName === 'verificaciones'
+        ? 'http://localhost:3001/admin/verificaciones'
+        : `http://localhost:3001/${tableName}`;
+      await axios.post(url, formDataWithImage, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      navigate(`/admin/${tableName}`);
+    } catch (error) {
+      console.error('Error creating record:', error.response || error.message);
+    }
+  };
 
   return (
     <main className="create-main">
@@ -152,7 +192,7 @@ const CreateForm = () => {
                 ))}
               </select>
             </div>
-          ) : (            
+          ) : (
             <div key={column}>
               <label>{column}:</label>
               <input
@@ -163,6 +203,29 @@ const CreateForm = () => {
               />
             </div>
           )
+        )}
+        <div>
+          <label>Seleccionar archivo:</label>
+          <input
+            type="file"
+            name="image"
+            onChange={handleFileChange}
+            disabled={image !== null} // Deshabilitar si ya hay una imagen seleccionada
+            style={{ display: 'none' }} // Ocultar el input de tipo file
+            id="fileInput"
+          />
+          <input
+            type="text"
+            value={imageName}
+            placeholder="Seleccione un archivo"
+            readOnly
+            onClick={() => document.getElementById('fileInput').click()}
+          />
+        </div>
+        {imagePreview && (
+          <div>
+            <img src={imagePreview} alt="Vista previa" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+          </div>
         )}
         <br />
         <button className="btn-crear-editar" type="submit">Crear</button>

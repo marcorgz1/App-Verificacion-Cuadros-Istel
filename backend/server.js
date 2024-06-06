@@ -6,11 +6,26 @@ const fs = require('fs');
 const path = require('path');
 const XLSX = require('xlsx');
 const multer = require('multer');
-
 const app = express();
+
 app.use(cors());
+app.use(express.json())
+
+// Configuración de Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Otras configuraciones de Express (body-parser, etc.)
 app.use(express.json());
-const upload = multer();
+app.use(express.urlencoded({ extended: true }));
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -212,9 +227,10 @@ app.get('/admin/modelos', (req, res) => {
   });
 });
 
-app.post('/modelos', (req, res) => {
+app.post('/modelos', upload.single('image'), (req, res) => {
   const { nombre_modelo, id_cliente } = req.body;
-  db.query('INSERT INTO modelos (nombre_modelo, id_cliente) VALUES (?, ?)', [nombre_modelo, id_cliente], (err, results) => {
+  const imageName = req.file ? req.file.filename : null; // Obtener el nombre del archivo subido
+  db.query('INSERT INTO modelos (nombre_modelo, id_cliente, imagen) VALUES (?, ?, ?)', [nombre_modelo, id_cliente, imageName], (err, results) => {
     if (err) {
       res.status(500).send(err);
     } else {

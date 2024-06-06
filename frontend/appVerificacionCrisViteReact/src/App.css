@@ -50,7 +50,7 @@ form label {
 
 input {
   background: #fff;
-  width: 175px;
+  width: 200px;
   height: 25px;
   border-radius: 15px;
   margin-left: 10px; 
@@ -90,25 +90,6 @@ form input {
 
 form p {
   margin: 30px 0 0 15px;
-}
-
-form button {
-  color: #fff;
-  font-family: "Avenir", sans-serif;
-  font-size: 16px;
-  font-weight: bold;
-  background: #23305e;
-  border: 3px solid #56bd9b;
-  border-radius: 15px;
-  padding: 7px;
-  width: 40%;
-  cursor: pointer;
-  margin-top: 30px;
-}
-
-form button:hover {
-  transition: .3s;
-  background: #56bd9b;
 }
 
 .app-main {
@@ -170,8 +151,40 @@ form button:hover {
   padding: 5px;
 }
 
+.numSeries-clientes {
+  display: flex;
+  place-items: center;
+  gap: 15px;
+}
+
 #numeroCliente {
   margin-top: 10px;
+}
+
+form button {
+  margin-top: 15px;
+  background: none;
+  border: 0;
+  color: #fff;
+}
+
+#btn-generar {
+  color: #fff;
+  font-family: "Avenir", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  background: #23305e;
+  border: 3px solid #56bd9b;
+  border-radius: 15px;
+  padding: 7px;
+  width: 40%;
+  cursor: pointer;
+  margin-top: 30px;
+}
+
+#btn-generar:hover {
+  transition: .3s;
+  background: #56bd9b;
 }
 
 .foto-producto img {
@@ -214,7 +227,8 @@ form button:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  gap: 25px;
+  width: 80%;
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 10px;
@@ -244,6 +258,7 @@ form button:hover {
   border: 3px solid #23305e;
   border-radius: 50px;
   margin-right: 10px;
+  text-align: center;
 }
 
 .styled-checkbox {
@@ -745,6 +760,10 @@ main a:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+#seleccionar-imagen {
+  background: none;
 }
 
 /* Formulario Editar */
