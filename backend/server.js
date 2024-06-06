@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 
@@ -26,6 +26,8 @@ const upload = multer({ storage: storage });
 // Otras configuraciones de Express (body-parser, etc.)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Servir archivos estáticos desde la carpeta 'uploads'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -215,7 +217,6 @@ app.get('/modelos', (req, res) => {
   });
 });
 
-// Obtener todos los modelos sin importar el id_cliente (para el admin)
 app.get('/admin/modelos', (req, res) => {
   const sql = 'SELECT * FROM modelos';
   db.query(sql, (err, results) => {

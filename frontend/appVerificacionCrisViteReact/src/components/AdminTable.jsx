@@ -54,8 +54,14 @@ const AdminTable = () => {
                                 <tbody>
                                     {data.map((row) => (
                                         <tr key={row.id}>
-                                            {Object.values(row).map((value, index) => (
-                                                <td key={index}>{value}</td>
+                                            {Object.entries(row).map(([key, value], index) => (
+                                                <td key={index}>
+                                                    {tableName === 'modelos' && key === 'imagen' ? (
+                                                        <img src={value} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
+                                                    ) : (
+                                                        value
+                                                    )}
+                                                </td>
                                             ))}
                                             <td>
                                                 <button

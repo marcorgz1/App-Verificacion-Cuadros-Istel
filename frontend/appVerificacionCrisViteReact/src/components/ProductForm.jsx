@@ -27,7 +27,7 @@ const ProductForm = () => {
     numeroCliente2: "",
     numeroCliente3: "",
     numeroCliente4: "",
-    numeroCliente5: "",
+    numeroCliente5: ""
   });
   const [requisitosCumplidos, setRequisitosCumplidos] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -40,12 +40,13 @@ const ProductForm = () => {
   const videoRef = useRef(null);
   const [stream, setStream] = useState(null);
 
+
+  const [modeloImagen, setModeloImagen] = useState("");
+
+
   const añadirClientes = () => {
     if (clientesAdicionales.length < maxClientes - 1) {
-      setClientesAdicionales([
-        ...clientesAdicionales,
-        { id: clientesAdicionales.length + 2 },
-      ]);
+      setClientesAdicionales([...clientesAdicionales, { id: clientesAdicionales.length + 2 }]);
     } else {
       alert("ERROR: No se pueden agregar más clientes");
     }
@@ -74,16 +75,17 @@ const ProductForm = () => {
 
   const fetchModelosCliente = async (clienteId) => {
     try {
-      const result = await axios.get(`http://localhost:3001/modelos`, {
-        params: {
-          clienteId: clienteId,
-        },
-      });
-      setModelos(result.data);
+        const result = await axios.get(`http://localhost:3001/modelos`, {
+            params: {
+                clienteId: clienteId,
+            },
+        });
+        setModelos(result.data);
     } catch (error) {
-      console.error("Error fetching models for client:", error);
+        console.error("Error fetching models for client:", error);
     }
-  };
+};
+
 
   useEffect(() => {
     if (selectedCliente) {
@@ -124,7 +126,14 @@ const ProductForm = () => {
     setSelectedModelo(modeloId);
     setSelectedModeloNombre(modeloNombre);
     fetchRequisitos(modeloId);
-  };
+    const modeloSeleccionado = modelos.find(modelo => modelo.id === parseInt(modeloId));
+    if (modeloSeleccionado) {
+        setModeloImagen(modeloSeleccionado.imagen);
+    } else {
+        setModeloImagen("");
+    }
+};
+
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -156,7 +165,7 @@ const ProductForm = () => {
         alert("Por favor, selecciona un cliente y un modelo.");
         return;
       }
-
+  
       const data = {
         ...form,
         id_usuario: userId,
@@ -165,81 +174,99 @@ const ProductForm = () => {
         requisitos_cumplidos: requisitosCumplidos,
         imagenes: nombresFotos,
       };
-
+  
       console.log("Datos enviados:", data);
-
-      const response = await axios.post(
-        "http://localhost:3001/verificaciones",
-        data
-      );
-
+  
+      const response = await axios.post("http://localhost:3001/verificaciones", data);
+  
       if (response.status === 200) {
         alert("Verificación guardada con éxito");
-
+  
         // Mapear IDs de requisitos cumplidos a sus nombres
         const nombresRequisitosCumplidos = Object.keys(requisitosCumplidos)
           .filter((key) => requisitosCumplidos[key])
           .map((key) => {
-            const requisito = requisitos.find(
-              (req) => req.id === parseInt(key)
-            );
+            const requisito = requisitos.find((req) => req.id === parseInt(key));
             return requisito ? requisito.nombre_requisito : key;
           });
-
+  
         // Generar PDF
         const doc = new jsPDF();
-
+  
+        // Cargar imagen desde el archivo
+        const logoUrl = "/src/assets/logo-istel.png";
+        const logoImage = new Image();
+        logoImage.src = logoUrl;
+  
         // Configurar estilos
         const titleFontSize = 24;
         const textFontSize = 12;
-        const margin = 30;
+        const margin = 20;
         const marginTop = 20;
         const lineSpacing = 10;
-
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const logoWidth = 50;
+        const logoHeight = 40;
+  
+        // Añadir logo
+        doc.addImage(logoImage, "PNG", (pageWidth - logoWidth) / 2, marginTop, logoWidth, logoHeight);
+  
         // Título
         doc.setFont("helvetica", "bold");
         doc.setFontSize(titleFontSize);
         doc.setTextColor(40, 40, 40);
-        doc.text("Verificación de Producto", margin, marginTop);
-
-        // Información general
+        doc.text("Verificación de Producto", pageWidth / 2, marginTop + logoHeight + 20, { align: "center" });
+  
+        // Información general en tabla
         doc.setFont("helvetica", "normal");
         doc.setFontSize(textFontSize);
         doc.setTextColor(60, 60, 60);
-        let currentY = margin + lineSpacing;
-        doc.text(`N° Cuadro: ${form.numeroCuadro}`, margin, currentY);
-        currentY += lineSpacing;
-        doc.text(`Cliente: ${selectedClienteNombre}`, margin, currentY);
-        currentY += lineSpacing;
-        doc.text(`Modelo: ${selectedModeloNombre}`, margin, currentY);
-        currentY += lineSpacing;
-        doc.text(
-          `N° Serie interruptor general: ${form.numeroInterruptor}`,
-          margin,
-          currentY
-        );
-        currentY += lineSpacing;
-        doc.text(`Operario: ${userId}`, margin, currentY);
-        currentY += lineSpacing;
-
+        const currentY = marginTop + logoHeight + 40;
+  
+        const tableData = [
+          ["N° Cuadro", form.numeroCuadro],
+          ["Cliente", selectedClienteNombre],
+          ["Modelo", selectedModeloNombre],
+          ["N° Serie interruptor general", form.numeroInterruptor],
+          ["Operario", userId],
+          ["Requisitos cumplidos", nombresRequisitosCumplidos.length > 0 ? nombresRequisitosCumplidos.join(", ") : "No se cumplieron requisitos"]
+        ];
+  
+        // Añadir tabla
+        const startX = margin;
+        const startY = currentY;
+        const cellPadding = 5;
+        const cellWidth = (pageWidth - 2 * margin) / 2;
+  
+        tableData.forEach((row, rowIndex) => {
+          const rowY = startY + rowIndex * (textFontSize + 2 * cellPadding);
+          row.forEach((cell, colIndex) => {
+            const cellX = startX + colIndex * cellWidth;
+            doc.rect(cellX, rowY, cellWidth, textFontSize + 2 * cellPadding);
+            doc.text(cell.toString(), cellX + cellPadding, rowY + textFontSize + cellPadding / 2);
+          });
+        });
+  
         // Requisitos cumplidos
+        doc.setFont("helvetica", "bold");
+        doc.text("Requisitos cumplidos:", margin, startY + tableData.length * (textFontSize + 2 * cellPadding) + lineSpacing);
+        doc.setFont("helvetica", "normal");
+        const requisitosStartY = startY + tableData.length * (textFontSize + 2 * cellPadding) + 2 * lineSpacing;
+  
         if (nombresRequisitosCumplidos.length > 0) {
-          doc.text(`Requisitos cumplidos:`, margin, currentY);
-          currentY += lineSpacing;
-          nombresRequisitosCumplidos.forEach((requisito) => {
-            doc.text(`- ${requisito}`, margin + 10, currentY);
-            currentY += lineSpacing;
+          nombresRequisitosCumplidos.forEach((requisito, index) => {
+            const requisitoY = requisitosStartY + index * lineSpacing;
+            doc.text(`- ${requisito}`, margin + 10, requisitoY);
           });
         } else {
-          doc.text(`No se cumplieron requisitos.`, margin, currentY);
-          currentY += lineSpacing;
+          doc.text("No se cumplieron requisitos.", margin + 10, requisitosStartY);
         }
-
+  
         // Añadir fotos al PDF
         const fotoWidth = 40;
         const fotoHeight = 40;
         let x = margin;
-        let y = currentY + lineSpacing;
+        let y = requisitosStartY + (nombresRequisitosCumplidos.length + 1) * lineSpacing;
         fotos.forEach((foto, index) => {
           if (index % 3 === 0 && index !== 0) {
             y += fotoHeight + 10;
@@ -248,9 +275,9 @@ const ProductForm = () => {
           doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
         });
-
+  
         doc.save("verificacion_producto.pdf");
-
+  
         // Generar Excel
         const excelData = {
           "N° Cuadro": form.numeroCuadro,
@@ -261,7 +288,7 @@ const ProductForm = () => {
           "Requisitos cumplidos": nombresRequisitosCumplidos.join(", "),
           Imágenes: nombresFotos.join(", "),
         };
-
+  
         const worksheet = XLSX.utils.json_to_sheet([excelData]);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Verificaciones");
@@ -271,7 +298,7 @@ const ProductForm = () => {
       console.error("Error al guardar la verificación:", error);
       alert("Error al guardar la verificación");
     }
-  };
+  }    
 
   const openCamera = async () => {
     try {
@@ -444,7 +471,6 @@ const ProductForm = () => {
                     />
                     <button
                       type="button"
-                      className="btn-delete-icon"
                       onClick={() => handleDelete(cliente.id)}
                     >
                       <DeleteIcon />
@@ -464,13 +490,19 @@ const ProductForm = () => {
             </form>
             <div className="operario-foto-producto">
               <div className="operario">
-                <span>Operario</span>
-                <div className="icono-operario">
-                  <UserIcon />
-                </div>
+                  <span>Operario</span>
+                  <div className="icono-operario">
+                      <UserIcon />
+                  </div>
               </div>
               <div className="foto-producto">
-                <img src={fotos[0]} alt="producto" />
+                  {modeloImagen && (
+                      <img
+                          src={`http://localhost:3001/uploads/${modeloImagen}`}
+                          alt="Modelo seleccionado"
+                          style={{ width: '100px', height: '100px' }}
+                      />
+                  )}
               </div>
             </div>
           </div>
