@@ -613,9 +613,8 @@ video {
   background: #ff0000;
 }
 
-main {
+.app-main {
   background: #23305e;
-  width: 85%;
   margin: 50px auto;
   padding: 20px;
 }
@@ -689,6 +688,17 @@ main a:hover {
 
 .btn-eliminar:hover {
   background: #B00000;
+}
+
+/* Listados */
+
+.listas-main {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #23305e;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 /* Formularios crear y editar */

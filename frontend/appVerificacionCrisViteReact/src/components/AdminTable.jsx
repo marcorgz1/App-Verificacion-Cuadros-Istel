@@ -13,7 +13,8 @@ const AdminTable = () => {
     }, [tableName]);
 
     const fetchData = async () => {
-        const result = await axios.get(`http://localhost:3001/${tableName}`);
+        const endpoint = tableName === 'modelos' ? `http://localhost:3001/admin/${tableName}` : `http://localhost:3001/${tableName}`;
+        const result = await axios.get(endpoint);
         setData(result.data);
     };
 
@@ -22,8 +23,13 @@ const AdminTable = () => {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:3001/${tableName}/${id}`);
-        fetchData();
+        try {
+            await axios.delete(`http://localhost:3001/${tableName}/${id}`);
+            fetchData();
+        } catch (error) {
+            console.error('There was an error deleting the record:', error);
+            alert(`Error al eliminar el registro: ${error.response?.data?.message || error.message}`);
+        }
     };
 
     return (
@@ -32,7 +38,7 @@ const AdminTable = () => {
             <Route
                 path=""
                 element={
-                    <main>
+                    <main className='listas-main'>
                         <h1>Datos de {tableName}</h1>
                         <section className="tabla-data">
                             <table>

@@ -94,7 +94,7 @@ const EditForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting form data:', formData);
+        console.log('Datos enviados:', formData);
         try {
             await axios.put(`http://localhost:3001/${tableName}/${id}`, formData);
             navigate(`/admin/${tableName}`);

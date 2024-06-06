@@ -322,7 +322,7 @@ const ProductForm = () => {
         <h1>VERIFICACIÓN DE PRODUCTO</h1>
         <img src="src/assets/logo-istel.png" alt="logo Istel" />
       </header>
-      <main>
+      <main className='app-main'>
         <section className="formulario">
           <div className="first-section">
             <form onSubmit={handleSubmit}>

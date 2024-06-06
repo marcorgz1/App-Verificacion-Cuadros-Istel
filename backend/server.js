@@ -189,16 +189,6 @@ app.delete('/clientes/:id', (req, res) => {
 
 // Rutas para modelos
 app.get('/modelos', (req, res) => {
-  db.query('SELECT * FROM modelos', (err, results) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).json(results);
-    }
-  });
-});
-
-app.get('/modelos', (req, res) => {
   const id_cliente = req.query.clienteId;
   const sql = 'SELECT * FROM modelos WHERE id_cliente = ?';
   db.query(sql, [id_cliente], (err, results) => {
