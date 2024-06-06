@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
+import { jsPDF } from 'jspdf';
 import CreateForm from './CreateForm';
 
 const AdminTable = () => {
@@ -70,6 +71,115 @@ const AdminTable = () => {
         }
     };
 
+    const handleGeneratePDF = (row) => {
+        const doc = new jsPDF();
+
+        // Cargar imagen desde el archivo
+        const logoUrl = "/src/assets/logo-istel.png";
+        const logoImage = new Image();
+        logoImage.src = logoUrl;
+
+        // Configurar estilos
+        const titleFontSize = 24;
+        const textFontSize = 12;
+        const margin = 20;
+        const marginTop = 20;
+        const lineSpacing = 10;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const logoWidth = 50;
+        const logoHeight = 40;
+
+        // Añadir logo
+        doc.addImage(logoImage, "PNG", (pageWidth - logoWidth) / 2, marginTop, logoWidth, logoHeight);
+
+        // Título
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(titleFontSize);
+        doc.setTextColor(40, 40, 40);
+        doc.text("Verificación de Producto", pageWidth / 2, marginTop + logoHeight + 20, { align: "center" });
+
+        // Información general y requisitos cumplidos en tabla
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(textFontSize);
+        doc.setTextColor(60, 60, 60);
+        let currentY = marginTop + logoHeight + 40;
+
+        const tableData = [
+            ["N° Cuadro", row.numero_cuadro || ""],
+            ["Cliente", row.id_cliente || ""],
+            ["Modelo", row.id_modelo || ""],
+            ["N° Serie interruptor general", row.numero_interruptor || ""],
+            ["Operario", row.id_usuario || ""],
+            ["Requisitos cumplidos", row.requisitos_cumplidos || ""],
+            ["N° Cliente 1", row.numero_cliente || ""],
+            ["N° Cliente 2", row.numero_cliente2 || ""],
+            ["N° Cliente 3", row.numero_cliente3 || ""]
+        ];
+
+        const remainingTableData = [
+            ["N° Cliente 4", row.numero_cliente4 || ""],
+            ["N° Cliente 5", row.numero_cliente5 || ""]
+        ];
+
+        const addTableToDoc = (doc, startX, startY, tableData, textFontSize, cellPadding, margin) => {
+            const cellWidth = (pageWidth - 2 * margin) / 2;
+
+            tableData.forEach((row, rowIndex) => {
+                const rowY = startY + rowIndex * (textFontSize + 2 * cellPadding);
+                row.forEach((cell, colIndex) => {
+                    const cellX = startX + colIndex * cellWidth;
+                    doc.rect(cellX, rowY, cellWidth, textFontSize + 2 * cellPadding);
+                    doc.text((cell || "").toString(), cellX + cellPadding, rowY + textFontSize + cellPadding / 2);
+                });
+            });
+
+            return startY + tableData.length * (textFontSize + 2 * cellPadding);
+        };
+
+        const cellPadding = 5;
+        currentY = addTableToDoc(doc, margin, currentY, tableData, textFontSize, cellPadding, margin);
+
+        // Verificar si se necesita una segunda página para la tabla restante
+        if (currentY + lineSpacing + remainingTableData.length * (textFontSize + 2 * cellPadding) > pageHeight) {
+            doc.addPage();
+            currentY = margin;
+        } else {
+            currentY += lineSpacing + 10;
+        }
+
+        currentY = addTableToDoc(doc, margin, currentY, remainingTableData, textFontSize, cellPadding, margin);
+
+        // Verificar si se necesita una nueva página para las fotos
+        if (currentY + lineSpacing + 30 > pageHeight) {
+            doc.addPage();
+            currentY = margin;
+        } else {
+            currentY += lineSpacing + 10;
+        }
+
+        // Añadir fotos al PDF
+        const fotoWidth = 20;
+        const fotoHeight = 20;
+        let x = margin;
+        let y = currentY;
+        const fotos = JSON.parse(row.imagenes || "[]"); // Assuming images are stored as a JSON array of URLs
+        fotos.forEach((foto, index) => {
+            if (index % 3 === 0 && index !== 0) {
+                y += fotoHeight + 10;
+                x = margin;
+                if (y + fotoHeight > pageHeight) {
+                    doc.addPage();
+                    y = margin;
+                }
+            }
+            doc.addImage(`http://localhost:3001/uploads/${foto}`, "JPEG", x, y, fotoWidth, fotoHeight);
+            x += fotoWidth + 10;
+        });
+
+        doc.save("verificacion_producto.pdf");
+    };
+
     return (
         <Routes>
             <Route path="create" element={<CreateForm />} />
@@ -124,6 +234,14 @@ const AdminTable = () => {
                                                 >
                                                     Eliminar
                                                 </button>
+                                                {tableName === 'verificaciones' && (
+                                                    <button
+                                                        className="btn-pdf"
+                                                        onClick={() => handleGeneratePDF(row)}
+                                                    >
+                                                        Generar PDF
+                                                    </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

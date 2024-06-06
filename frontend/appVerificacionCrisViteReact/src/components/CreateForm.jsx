@@ -78,20 +78,21 @@ const CreateForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formDataToSubmit = new FormData(); // Utiliza FormData para manejar la carga de archivos
-    for (const key in formData) {
-      formDataToSubmit.append(key, formData[key]);
-    }
-    if (imageFile) {
-      formDataToSubmit.append('imagen', imageFile);
-    }
-
     try {
-      await axios.post(`http://localhost:3001/${tableName}`, formDataToSubmit, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      if (tableName === 'modelos' && imageFile) {
+        const formDataToSubmit = new FormData();
+        for (const key in formData) {
+          formDataToSubmit.append(key, formData[key]);
+        }
+        formDataToSubmit.append('imagen', imageFile);
+        await axios.post(`http://localhost:3001/${tableName}`, formDataToSubmit, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } else {
+        await axios.post(`http://localhost:3001/${tableName}`, formData);
+      }
       navigate(`/admin/${tableName}`);
     } catch (error) {
       console.error('Error creating record:', error);
@@ -110,9 +111,9 @@ const CreateForm = () => {
             <div key={column}>
               <label>{column}:</label>
               <input
-                type={column === 'imagen' ? 'file' : 'text'}
+                type={tableName === 'modelos' && column === 'imagen' ? 'file' : 'text'}
                 name={column}
-                value={column !== 'imagen' ? formData[column] : undefined}
+                value={tableName === 'modelos' && column === 'imagen' ? undefined : formData[column]}
                 onChange={handleChange}
               />
             </div>

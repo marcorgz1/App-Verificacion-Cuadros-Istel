@@ -362,6 +362,7 @@ video {
 .container-img {
   position: absolute;
   top: 3%;
+  left: 10%;
   margin: auto;
   background: #fff;
   border-radius: 50%;

@@ -94,14 +94,19 @@ const EditForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Datos enviados:', formData);
+        const updatedFormData = {
+            ...formData,
+            imagenes: formData.imagenes ? formData.imagenes.split(',').map(img => img.trim()) : []
+        };
+        console.log('Datos enviados:', updatedFormData);
         try {
-            await axios.put(`http://localhost:3001/${tableName}/${id}`, formData);
+            await axios.put(`http://localhost:3001/${tableName}/${id}`, updatedFormData);
             navigate(`/admin/${tableName}`);
         } catch (error) {
             console.error('Error updating record:', error);
         }
-    };
+    };      
+    
 
     if (loading) {
         return <div>Cargando datos...</div>;

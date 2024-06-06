@@ -264,23 +264,18 @@ ALTER TABLE `verificaciones`
 -- Filtros para la tabla `modelos`
 --
 ALTER TABLE `modelos`
-  ADD CONSTRAINT `modelos_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`);
+  ADD CONSTRAINT `modelos_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `requisitos`
 --
 ALTER TABLE `requisitos`
-  ADD CONSTRAINT `requisitos_ibfk_1` FOREIGN KEY (`id_modelo`) REFERENCES `modelos` (`id`);
+  ADD CONSTRAINT `requisitos_ibfk_1` FOREIGN KEY (`id_modelo`) REFERENCES `modelos` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `verificaciones`
 --
 ALTER TABLE `verificaciones`
   ADD CONSTRAINT `verificaciones_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`),
-  ADD CONSTRAINT `verificaciones_ibfk_2` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`),
-  ADD CONSTRAINT `verificaciones_ibfk_3` FOREIGN KEY (`id_modelo`) REFERENCES `modelos` (`id`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+  ADD CONSTRAINT `verificaciones_ibfk_2` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `verificaciones_ibfk_3` FOREIGN KEY (`id_modelo`) REFERENCES `modelos` (`id`) ON DELETE CASCADE;

@@ -576,7 +576,7 @@ app.put("/verificaciones/:id", (req, res) => {
     numero_cliente4,
     numero_cliente5,
     cantidadRequisitosCumplidos,
-    imagenes ? JSON.stringify(imagenes) : null,
+    imagenes ? JSON.stringify(imagenes.split(',')) : null, // Convertir a JSON
     fechaActual,
     id,
   ];
