@@ -176,21 +176,3 @@ const EditForm = () => {
 };
 
 export default EditForm;
-
-/*
-<div className='input-wrapper' key={key}>
-    <label htmlFor={key} className='form-label'>{key}</label>
-    <input
-        type="text"
-        id={key}
-        name={key}
-        value={value || ''}
-        onChange={handleChange}
-        className='form-input'
-    />
-</div>
-
-<button className='btn-crear-editar' type="submit">Guardar</button>
-
-<button className='btn btn-eliminar' type="button" onClick={handleCancel}>Cancelar</button>
-*/
