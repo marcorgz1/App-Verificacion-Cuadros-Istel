@@ -152,7 +152,7 @@ const ProductForm = () => {
         alert("Por favor, selecciona un cliente y un modelo.");
         return;
       }
-
+  
       const data = {
         ...form,
         id_usuario: userId,
@@ -161,42 +161,46 @@ const ProductForm = () => {
         requisitos_cumplidos: requisitosCumplidos,
         imagenes: nombresFotos,
       };
-
+  
       console.log("Datos enviados:", data);
-
+  
       const response = await axios.post(
         "http://localhost:3001/verificaciones",
         data
       );
-
+  
       if (response.status === 200) {
         alert("Verificación guardada con éxito");
-
-        // Calcular la posición final antes de las fotos
-        const textHeight = 80 + requisitos.length * 10;
-        const fotoStartY = textHeight + 10;
-
+  
+        // Mapear IDs de requisitos cumplidos a sus nombres
+        const nombresRequisitosCumplidos = Object.keys(requisitosCumplidos)
+          .filter((key) => requisitosCumplidos[key])
+          .map((key) => {
+            const requisito = requisitos.find((req) => req.id === parseInt(key));
+            return requisito ? requisito.nombre_requisito : key;
+          });
+  
         // Generar PDF
         const doc = new jsPDF();
-
+  
         // Configurar estilos
         const titleFontSize = 24;
-        const textFontSize = 14;
-        const margin = 20;
-        const marginLeft = 35;
+        const textFontSize = 12;
+        const margin = 30;
+        const marginTop = 20
         const lineSpacing = 10;
-
+  
         // Título
         doc.setFont("helvetica", "bold");
         doc.setFontSize(titleFontSize);
         doc.setTextColor(40, 40, 40);
-        doc.text("Verificación de Producto", margin, margin);
-
+        doc.text("Verificación de Producto", margin, marginTop);
+  
         // Información general
         doc.setFont("helvetica", "normal");
         doc.setFontSize(textFontSize);
         doc.setTextColor(60, 60, 60);
-        let currentY = margin + lineSpacing * 2;
+        let currentY = margin + lineSpacing
         doc.text(`N° Cuadro: ${form.numeroCuadro}`, margin, currentY);
         currentY += lineSpacing;
         doc.text(`Cliente: ${selectedClienteNombre}`, margin, currentY);
@@ -211,30 +215,36 @@ const ProductForm = () => {
         currentY += lineSpacing;
         doc.text(`Operario: ${userId}`, margin, currentY);
         currentY += lineSpacing;
-        doc.text(
-          `Requisitos cumplidos: ${Object.keys(requisitosCumplidos)
-            .filter((key) => requisitosCumplidos[key])
-            .join(", ")}`,
-          margin,
-          currentY
-        );
-
+  
+        // Requisitos cumplidos
+        if (nombresRequisitosCumplidos.length > 0) {
+          doc.text(`Requisitos cumplidos:`, margin, currentY);
+          currentY += lineSpacing;
+          nombresRequisitosCumplidos.forEach((requisito) => {
+            doc.text(`- ${requisito}`, margin + 10, currentY);
+            currentY += lineSpacing;
+          });
+        } else {
+          doc.text(`No se cumplieron requisitos.`, margin, currentY);
+          currentY += lineSpacing;
+        }
+  
         // Añadir fotos al PDF
         const fotoWidth = 40;
         const fotoHeight = 40;
-        let x = marginLeft;
-        let y = fotoStartY;
+        let x = margin;
+        let y = currentY + lineSpacing;
         fotos.forEach((foto, index) => {
           if (index % 3 === 0 && index !== 0) {
             y += fotoHeight + 10;
-            x = marginLeft;
+            x = margin;
           }
           doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
         });
-
+  
         doc.save("verificacion_producto.pdf");
-
+  
         // Generar Excel
         const excelData = {
           "N° Cuadro": form.numeroCuadro,
@@ -242,12 +252,10 @@ const ProductForm = () => {
           Modelo: selectedModeloNombre,
           "N° Serie interruptor general": form.numeroInterruptor,
           Operario: userId,
-          "Requisitos cumplidos": Object.keys(requisitosCumplidos)
-            .filter((key) => requisitosCumplidos[key])
-            .join(", "),
+          "Requisitos cumplidos": nombresRequisitosCumplidos.join(", "),
           Imágenes: nombresFotos.join(", "),
         };
-
+  
         const worksheet = XLSX.utils.json_to_sheet([excelData]);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Verificaciones");
@@ -257,7 +265,7 @@ const ProductForm = () => {
       console.error("Error al guardar la verificación:", error);
       alert("Error al guardar la verificación");
     }
-  };
+  };  
 
   const openCamera = async () => {
     try {
@@ -361,11 +369,7 @@ const ProductForm = () => {
                     {modelo.nombre_modelo}
                   </option>
                 ))}
-              </select>
-              <br />              
-              <button type="submit" disabled={isButtonDisabled}>
-                Generar PDF/Añadir Excel
-              </button>
+              </select>              
               <br />
               <br />
               <div className="num-series">
@@ -390,7 +394,7 @@ const ProductForm = () => {
                 {clientesAdicionales.map((cliente) => (
                 <div key={cliente.id}>
                   <label htmlFor={`numSerieCliente${cliente.id}`}>
-                    Nº Serie Cliente {cliente.id}
+                    Nº Serie Cliente {cliente.id}:
                   </label>
                   <input
                     type="text"
@@ -403,29 +407,30 @@ const ProductForm = () => {
                   <br />
                 </div>
               ))}
-              </div>
-            </form>
+              </div>              
+              <br />              
+              <button type="submit" disabled={isButtonDisabled}>
+                Generar PDF/Añadir Excel
+              </button>
+            </form>            
             <div className="operario-foto-producto">
               <div className="operario">
                 <span>Operario</span>
                 <div className="icono-operario">
                   <UserIcon />
-                  <div className="num-operario">
-                    <span>-</span>
-                  </div>
                 </div>
               </div>
               <div className="foto-producto">
                 <img src={fotos[0]} alt="producto" />
               </div>
             </div>
-          </div>
+          </div> 
           <div className="cliente-adicional">
             <button onClick={añadirClientes}>
               <PlusIcon />
             </button>
             <span>Añadir cliente adicional</span>
-          </div>
+          </div>                
         </section>
         <section className="revisiones">
           {requisitos.map((requisito) => (
@@ -447,6 +452,7 @@ const ProductForm = () => {
             </div>
           ))}
         </section>
+
       </main>
       <footer>
         <div className="fotos">

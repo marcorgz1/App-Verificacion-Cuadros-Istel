@@ -18,7 +18,7 @@ header {
 }
 
 header h1 {
-  font-size: 48px;
+  font-size: 36px;
   font-family: 'Viga', sans-serif;
 }
 
@@ -50,7 +50,7 @@ form label {
 
 input {
   background: #fff;
-  width: 195px;
+  width: 175px;
   height: 25px;
   border-radius: 15px;
   margin-left: 10px; 
@@ -100,7 +100,7 @@ form button {
   background: #23305e;
   border: 3px solid #56bd9b;
   border-radius: 15px;
-  padding: 10px;
+  padding: 7px;
   width: 40%;
   cursor: pointer;
   margin-top: 30px;
@@ -109,6 +109,11 @@ form button {
 form button:hover {
   transition: .3s;
   background: #56bd9b;
+}
+
+.app-main {
+  margin: 20px auto;
+  padding: 20px;
 }
 
 .formulario {
@@ -140,6 +145,10 @@ form button:hover {
   font-weight: 500;
 }
 
+.num-series input {
+  margin-top: 15px;
+}
+
 .icono-operario {
   position: relative;
   background: #fff;
@@ -166,8 +175,7 @@ form button:hover {
 }
 
 .foto-producto img {
-  width: 135px;
-  margin-top: 15px;
+  width: 150px;
   background: #fff;
   border: 4px solid #56bd9b;
   border-radius: 40px;
@@ -204,45 +212,49 @@ form button:hover {
 
 .checkbox-wrapper {
   display: flex;
-  gap: 130px;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .number {
-  background: #fff;
   padding: 5px;
   color: white;
+  background: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
   font-size: 1.5em;
   -webkit-text-stroke: 1.5px #23305e;
+  margin-right: 10px;
 }
 
 .name-input {
+  flex: 1;
   padding: 15px;
   border-radius: 5px;
-  margin-right: 10px;
   font-size: 1em;
   font-weight: bold;
-  background: #fff;
   color: #23305e;
+  background: #fff;
   border: 3px solid #23305e;
   border-radius: 50px;
+  margin-right: 10px;
 }
 
 .styled-checkbox {
-  display: none;
+  display: none;  
 }
 
 .styled-checkbox + .checkbox-label {
   width: 28px;
   height: 28px;
   display: inline-block;
-  background-color: white;
+  background: #fff;
   border: 4px solid #23305e;
   border-radius: 4px;
   position: relative;
@@ -591,11 +603,6 @@ video {
   color: #56bd9b;
 }
 
-.app-main {
-  margin: 50px auto;
-  padding: 20px;
-}
-
 main h1 {
   font-family: 'Viga', sans-serif;
   font-size: 36px;
@@ -620,13 +627,13 @@ main a:hover {
 }
 
 .tabla-data th, .tabla-data td {
-  padding: 25px;
+  padding: 10px;
   border: 1px solid #ddd;
   text-align: center;
 }
 
 .tabla-data th, .tabla-data tr:nth-child(even) {
-  background: #007851;
+  background: #56bd9b;
 }
 
 .tabla-data button {  

@@ -74,7 +74,7 @@ const CreateForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting form data:', formData);  // Registro de depuración
+    console.log('Datos enviados:', formData);  // Registro de depuración
     try {
         const url = tableName === 'verificaciones' 
             ? 'http://localhost:3001/admin/verificaciones' 
@@ -152,9 +152,7 @@ const CreateForm = () => {
                 ))}
               </select>
             </div>
-          ) : (
-
-            // TODO: Hacer que clave secreta salga como tipo contraseña, no tipo número
+          ) : (            
             <div key={column}>
               <label>{column}:</label>
               <input
