@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-import CreateForm from './CreateForm';
+import CreateForm from './CreateForm'; // Asegúrate de que la ruta sea correcta
 
 const AdminTable = () => {
     const { tableName } = useParams();
@@ -41,13 +41,14 @@ const AdminTable = () => {
                 id_usuario: usuarioMap[item.id_usuario] || item.id_usuario,
                 id_cliente: clienteMap[item.id_cliente] || item.id_cliente,
                 id_modelo: modeloMap[item.id_modelo] || item.id_modelo,
-            }));
+            }))
     
             setData(updatedData);
         } else {
             setData(result.data);
         }
-    };
+    };    
+    
 
     const handleCreate = () => {
         navigate(`/admin/${tableName}/create`);
@@ -87,8 +88,8 @@ const AdminTable = () => {
                                         <tr key={row.id}>
                                             {Object.entries(row).map(([key, value], index) => (
                                                 <td key={index}>
-                                                    {tableName === 'modelos' && key === 'imagen' && value ? (
-                                                        <img src={`http://localhost:3001/uploads/${value}`} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
+                                                    {tableName === 'modelos' && key === 'imagen' ? (
+                                                        <img src={value} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
                                                     ) : (
                                                         value
                                                     )}

@@ -300,7 +300,7 @@ const ProductForm = () => {
     }
   };
 
-  const takePhoto = () => {
+  const takePhoto = async () => {
     if (contadorFotos >= maxFotos) {
       alert("No se pueden tomar más fotos");
       return;
@@ -313,15 +313,45 @@ const ProductForm = () => {
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
     const newPhoto = canvas.toDataURL("image/png");
-    const nombre_foto = `foto${contadorFotos + 1}.png`;
-    setFotos((prevPhotos) => [...prevPhotos, newPhoto]);
-    setNombresFotos((prevNames) => [...prevNames, nombre_foto]);
-    setContadorFotos(contadorFotos + 1);
 
-    if (contadorFotos + 1 >= maxFotos) {
-      stopCamera();
-      alert("No se pueden tomar más fotos");
+    // Subir la imagen al servidor
+    try {
+      const formData = new FormData();
+      formData.append('image', dataURLtoBlob(newPhoto));
+      const response = await axios.post('http://localhost:3001/upload-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+        const nombre_foto = response.data.fileName;
+        setFotos((prevPhotos) => [...prevPhotos, newPhoto]);
+        setNombresFotos((prevNames) => [...prevNames, nombre_foto]);
+        setContadorFotos(contadorFotos + 1);
+
+        if (contadorFotos + 1 >= maxFotos) {
+          stopCamera();
+          alert("No se pueden tomar más fotos");
+        }
+      } else {
+        console.error('Error al subir la imagen:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error al subir la imagen:', error);
     }
+  };
+
+  const dataURLtoBlob = (dataURL) => {
+    const arr = dataURL.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
   };
 
   const handleCameraClick = () => {

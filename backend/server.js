@@ -44,6 +44,21 @@ db.connect((err) => {
   console.log("Connected to the MySQL server.");
 });
 
+app.post('/upload-image', upload.single('image'), (req, res) => {
+  if (req.file) {
+    const newFileName = `${req.file.filename}.jpg`;
+    const newPath = path.join(__dirname, 'uploads', newFileName);
+    fs.rename(req.file.path, newPath, (err) => {
+      if (err) {
+        return res.status(500).send('Error al renombrar la imagen');
+      }
+      res.status(200).json({ fileName: newFileName });
+    });
+  } else {
+    res.status(400).send('Error al subir la imagen');
+  }
+});
+
 // Rutas de autenticación y registro de usuarios
 app.post("/register", (req, res) => {
   const { nombre_usuario, clave_secreta } = req.body;
