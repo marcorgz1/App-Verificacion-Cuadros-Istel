@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-import CreateForm from './CreateForm'; // Asegúrate de que la ruta sea correcta
+import CreateForm from './CreateForm';
 
 const AdminTable = () => {
     const { tableName } = useParams();
@@ -16,6 +16,37 @@ const AdminTable = () => {
         const endpoint = tableName === 'modelos' ? `http://localhost:3001/admin/${tableName}` : `http://localhost:3001/${tableName}`;
         const result = await axios.get(endpoint);
         setData(result.data);
+        if (tableName === 'verificaciones') {
+            const usuarios = await axios.get('http://localhost:3001/usuarios');
+            const clientes = await axios.get('http://localhost:3001/clientes');
+            const modelos = await axios.get('http://localhost:3001/modelos');
+            
+            const usuarioMap = usuarios.data.reduce((map, user) => {
+                map[user.id] = user.nombre_usuario;
+                return map;
+            }, {});
+            
+            const clienteMap = clientes.data.reduce((map, cliente) => {
+                map[cliente.id] = cliente.nombre_cliente;
+                return map;
+            }, {});
+    
+            const modeloMap = modelos.data.reduce((map, modelo) => {
+                map[modelo.id] = modelo.nombre_modelo;
+                return map;
+            }, {});
+    
+            const updatedData = result.data.map(item => ({
+                ...item,
+                id_usuario: usuarioMap[item.id_usuario] || item.id_usuario,
+                id_cliente: clienteMap[item.id_cliente] || item.id_cliente,
+                id_modelo: modeloMap[item.id_modelo] || item.id_modelo,
+            }));
+    
+            setData(updatedData);
+        } else {
+            setData(result.data);
+        }
     };
 
     const handleCreate = () => {
@@ -56,8 +87,8 @@ const AdminTable = () => {
                                         <tr key={row.id}>
                                             {Object.entries(row).map(([key, value], index) => (
                                                 <td key={index}>
-                                                    {tableName === 'modelos' && key === 'imagen' ? (
-                                                        <img src={value} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
+                                                    {tableName === 'modelos' && key === 'imagen' && value ? (
+                                                        <img src={`http://localhost:3001/uploads/${value}`} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
                                                     ) : (
                                                         value
                                                     )}
