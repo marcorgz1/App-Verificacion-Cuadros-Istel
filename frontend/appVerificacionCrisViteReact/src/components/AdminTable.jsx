@@ -160,8 +160,8 @@ const AdminTable = () => {
         }
 
         // Añadir fotos al PDF
-        const fotoWidth = 20;
-        const fotoHeight = 20;
+        const fotoWidth = 35;
+        const fotoHeight = 35;
         let x = margin;
         let y = currentY;
         const fotos = JSON.parse(row.imagenes || "[]"); // Assuming images are stored as a JSON array of URLs
