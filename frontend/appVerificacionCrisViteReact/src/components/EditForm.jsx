@@ -10,19 +10,23 @@ const EditForm = () => {
     const [columns, setColumns] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [modelos, setModelos] = useState([]);
+    const [requisitos, setRequisitos] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
 
     useEffect(() => {
+        console.log(`Fetching data for table: ${tableName}, id: ${id}`);
         fetchColumns();
         fetchData();
         if (tableName === 'modelos' || tableName === 'verificaciones') {
             fetchClientes();
         }
-        if (tableName === 'verificaciones' || tableName === 'requisitos') { // Asegurarse de obtener modelos para ambos casos
+        if (tableName === 'verificaciones' || tableName === 'requisitos') {
             fetchModelos();
+            fetchRequisitos()
             fetchUsuarios();
         }
     }, [tableName, id]);
+    
 
     const fetchColumns = async () => {
         try {
@@ -36,8 +40,10 @@ const EditForm = () => {
     const fetchData = async () => {
         try {
             const response = await axios.get(`http://localhost:3001/${tableName}/${id}`);
+            console.log('Response data:', response.data); // Log de la respuesta
             if (response.data.length > 0) {
                 const fetchedData = response.data[0];
+                console.log('Fetched data:', fetchedData); // Log de los datos obtenidos
                 const initialFormData = {};
                 for (const key in fetchedData) {
                     initialFormData[key] = fetchedData[key] !== null && fetchedData[key] !== undefined ? fetchedData[key] : '';
@@ -51,7 +57,7 @@ const EditForm = () => {
         } finally {
             setLoading(false);
         }
-    };
+    };    
 
     const fetchClientes = async () => {
         try {
@@ -68,6 +74,15 @@ const EditForm = () => {
             setModelos(result.data);
         } catch (error) {
             console.error('Error fetching models:', error);
+        }
+    };
+
+    const fetchRequisitos = async () => {
+        try {
+            const result = await axios.get('http://localhost:3001/admin/modelos');
+            setRequisitos(result.data);
+        } catch (error) {
+            console.error('Error fetching requirements:', error);
         }
     };
 
@@ -94,19 +109,14 @@ const EditForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const updatedFormData = {
-            ...formData,
-            imagenes: formData.imagenes ? formData.imagenes.split(',').map(img => img.trim()) : []
-        };
-        console.log('Datos enviados:', updatedFormData);
+        console.log('Datos enviados:', formData);
         try {
-            await axios.put(`http://localhost:3001/${tableName}/${id}`, updatedFormData);
+            await axios.put(`http://localhost:3001/${tableName}/${id}`, formData);
             navigate(`/admin/${tableName}`);
         } catch (error) {
             console.error('Error updating record:', error);
         }
-    };      
-    
+    };
 
     if (loading) {
         return <div>Cargando datos...</div>;
@@ -148,6 +158,16 @@ const EditForm = () => {
                                 ))}
                             </select>
                         </div>
+                    ) : column === 'id_requisito' ? (
+                        <div key={column}>
+                            <label htmlFor={column} className='form-label'>{column}:</label>
+                            <select name={column} value={formData[column] || ''} onChange={handleChange}>
+                                <option value="">Seleccione un modelo</option>
+                                {requisitos.map(requisito => (
+                                    <option key={requisito.id} value={requisito.nombre_requisito}>{requisito.id_modelo}</option>
+                                ))}
+                            </select>
+                        </div>
                     ) : column === 'id_usuario' ? (
                         <div key={column}>
                             <label htmlFor={column} className='form-label'>{column}:</label>
@@ -172,12 +192,12 @@ const EditForm = () => {
                     )
                 ))}
                 <br />
-                <button className='btn-crear-editar' type="submit">Guardar</button>                
+                <button className='btn-crear-editar' type="submit">Guardar</button>
             </form>
             <br />
             <button className='btn btn-eliminar' type="button" onClick={handleCancel}>Cancelar</button>
         </main>
-    );    
+    );
 };
 
 export default EditForm;

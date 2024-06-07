@@ -27,7 +27,7 @@ const ProductForm = () => {
     numeroCliente2: "",
     numeroCliente3: "",
     numeroCliente4: "",
-    numeroCliente5: ""
+    numeroCliente5: "",
   });
   const [requisitosCumplidos, setRequisitosCumplidos] = useState({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -44,7 +44,10 @@ const ProductForm = () => {
 
   const añadirClientes = () => {
     if (clientesAdicionales.length < maxClientes - 1) {
-      setClientesAdicionales([...clientesAdicionales, { id: clientesAdicionales.length + 2 }]);
+      setClientesAdicionales([
+        ...clientesAdicionales,
+        { id: clientesAdicionales.length + 2 },
+      ]);
     } else {
       alert("ERROR: No se pueden agregar más clientes");
     }
@@ -123,7 +126,9 @@ const ProductForm = () => {
     setSelectedModelo(modeloId);
     setSelectedModeloNombre(modeloNombre);
     fetchRequisitos(modeloId);
-    const modeloSeleccionado = modelos.find((modelo) => modelo.id === parseInt(modeloId));
+    const modeloSeleccionado = modelos.find(
+      (modelo) => modelo.id === parseInt(modeloId)
+    );
     if (modeloSeleccionado) {
       setModeloImagen(modeloSeleccionado.imagen);
     } else {
@@ -180,7 +185,10 @@ const ProductForm = () => {
 
       console.log("Datos enviados:", data);
 
-      const response = await axios.post("http://localhost:3001/verificaciones", data);
+      const response = await axios.post(
+        "http://localhost:3001/verificaciones",
+        data
+      );
 
       if (response.status === 200) {
         alert("Verificación guardada con éxito");
@@ -189,7 +197,9 @@ const ProductForm = () => {
         const nombresRequisitosCumplidos = Object.keys(requisitosCumplidos)
           .filter((key) => requisitosCumplidos[key])
           .map((key) => {
-            const requisito = requisitos.find((req) => req.id === parseInt(key));
+            const requisito = requisitos.find(
+              (req) => req.id === parseInt(key)
+            );
             return requisito ? requisito.nombre_requisito : key;
           });
 
@@ -208,23 +218,36 @@ const ProductForm = () => {
         const marginTop = 20;
         const lineSpacing = 10;
         const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
         const logoWidth = 50;
         const logoHeight = 40;
 
         // Añadir logo
-        doc.addImage(logoImage, "PNG", (pageWidth - logoWidth) / 2, marginTop, logoWidth, logoHeight);
+        doc.addImage(
+          logoImage,
+          "PNG",
+          (pageWidth - logoWidth) / 2,
+          marginTop,
+          logoWidth,
+          logoHeight
+        );
 
         // Título
         doc.setFont("helvetica", "bold");
         doc.setFontSize(titleFontSize);
         doc.setTextColor(40, 40, 40);
-        doc.text("Verificación de Producto", pageWidth / 2, marginTop + logoHeight + 20, { align: "center" });
+        doc.text(
+          "Verificación de Producto",
+          pageWidth / 2,
+          marginTop + logoHeight + 20,
+          { align: "center" }
+        );
 
         // Información general y requisitos cumplidos en tabla
         doc.setFont("helvetica", "normal");
         doc.setFontSize(textFontSize);
         doc.setTextColor(60, 60, 60);
-        const currentY = marginTop + logoHeight + 40;
+        let currentY = marginTop + logoHeight + 40;
 
         const tableData = [
           ["N° Cuadro", form.numeroCuadro],
@@ -232,33 +255,110 @@ const ProductForm = () => {
           ["Modelo", selectedModeloNombre],
           ["N° Serie interruptor general", form.numeroInterruptor],
           ["Operario", userId],
-          ["Requisitos cumplidos", nombresRequisitosCumplidos.length > 0 ? nombresRequisitosCumplidos.join(", ") : "No se cumplieron requisitos"],
+          ["N° Cliente 1", form.numeroCliente1],
+          ["N° Cliente 2", form.numeroCliente2],
+          ["N° Cliente 3", form.numeroCliente3],
         ];
 
-        // Añadir tabla
-        const startX = margin;
-        const startY = currentY;
-        const cellPadding = 5;
-        const cellWidth = (pageWidth - 2 * margin) / 2;
+        const additionalTableData = [
+          ["N° Cliente 4", form.numeroCliente4],
+          ["N° Cliente 5", form.numeroCliente5],
+          [
+            "Requisitos cumplidos",
+            nombresRequisitosCumplidos.length > 0
+              ? nombresRequisitosCumplidos.join(", ")
+              : "No se cumplieron requisitos",
+          ],
+        ];
 
-        tableData.forEach((row, rowIndex) => {
-          const rowY = startY + rowIndex * (textFontSize + 2 * cellPadding);
-          row.forEach((cell, colIndex) => {
-            const cellX = startX + colIndex * cellWidth;
-            doc.rect(cellX, rowY, cellWidth, textFontSize + 2 * cellPadding);
-            doc.text(cell.toString(), cellX + cellPadding, rowY + textFontSize + cellPadding / 2);
+        const addTableToDoc = (
+          doc,
+          startX,
+          startY,
+          tableData,
+          textFontSize,
+          cellPadding,
+          margin
+        ) => {
+          const cellWidth = (pageWidth - 2 * margin) / 2;
+
+          tableData.forEach((row, rowIndex) => {
+            const rowY = startY + rowIndex * (textFontSize + 2 * cellPadding);
+            // Verificar si se necesita una nueva página
+            if (rowY + textFontSize + 2 * cellPadding > pageHeight - margin) {
+              doc.addPage();
+              startY = margin;
+              // rowY = startY;
+            }
+            row.forEach((cell, colIndex) => {
+              const cellX = startX + colIndex * cellWidth;
+              doc.rect(cellX, rowY, cellWidth, textFontSize + 2 * cellPadding);
+              doc.text(
+                (cell || "").toString(),
+                cellX + cellPadding,
+                rowY + textFontSize + cellPadding / 2
+              );
+            });
           });
-        });
+
+          return startY + tableData.length * (textFontSize + 2 * cellPadding);
+        };
+
+        const cellPadding = 5;
+        currentY = addTableToDoc(
+          doc,
+          margin,
+          currentY,
+          tableData,
+          textFontSize,
+          cellPadding,
+          margin
+        );
+
+        // Verificar si se necesita una nueva página para los campos adicionales
+        if (
+          currentY +
+            lineSpacing +
+            additionalTableData.length * (textFontSize + 2 * cellPadding) >
+          pageHeight
+        ) {
+          doc.addPage();
+          currentY = margin;
+        } else {
+          currentY += lineSpacing + 10;
+        }
+
+        currentY = addTableToDoc(
+          doc,
+          margin,
+          currentY,
+          additionalTableData,
+          textFontSize,
+          cellPadding,
+          margin
+        );
+
+        // Verificar si se necesita una nueva página para las fotos
+        if (currentY + lineSpacing + 30 > pageHeight) {
+          doc.addPage();
+          currentY = margin;
+        } else {
+          currentY += lineSpacing + 10;
+        }
 
         // Añadir fotos al PDF
         const fotoWidth = 20;
         const fotoHeight = 20;
         let x = margin;
-        let y = startY + tableData.length * (textFontSize + 2 * cellPadding) + lineSpacing;
+        let y = currentY;
         fotos.forEach((foto, index) => {
           if (index % 3 === 0 && index !== 0) {
             y += fotoHeight + 10;
             x = margin;
+            if (y + fotoHeight > pageHeight) {
+              doc.addPage();
+              y = margin;
+            }
           }
           doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
@@ -273,6 +373,11 @@ const ProductForm = () => {
           Modelo: selectedModeloNombre,
           "N° Serie interruptor general": form.numeroInterruptor,
           Operario: userId,
+          "N° Cliente 1": form.numeroCliente1,
+          "N° Cliente 2": form.numeroCliente2,
+          "N° Cliente 3": form.numeroCliente3,
+          "N° Cliente 4": form.numeroCliente4,
+          "N° Cliente 5": form.numeroCliente5,
           "Requisitos cumplidos": nombresRequisitosCumplidos.join(", "),
           Imágenes: nombresFotos.join(", "),
         };
@@ -317,12 +422,16 @@ const ProductForm = () => {
     // Subir la imagen al servidor
     try {
       const formData = new FormData();
-      formData.append('image', dataURLtoBlob(newPhoto));
-      const response = await axios.post('http://localhost:3001/upload-image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      formData.append("image", dataURLtoBlob(newPhoto));
+      const response = await axios.post(
+        "http://localhost:3001/upload-image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
+      );
 
       if (response.status === 200) {
         const nombre_foto = response.data.fileName;
@@ -335,15 +444,15 @@ const ProductForm = () => {
           alert("No se pueden tomar más fotos");
         }
       } else {
-        console.error('Error al subir la imagen:', response.statusText);
+        console.error("Error al subir la imagen:", response.statusText);
       }
     } catch (error) {
-      console.error('Error al subir la imagen:', error);
+      console.error("Error al subir la imagen:", error);
     }
   };
 
   const dataURLtoBlob = (dataURL) => {
-    const arr = dataURL.split(',');
+    const arr = dataURL.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
     let n = bstr.length;

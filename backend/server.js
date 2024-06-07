@@ -330,19 +330,17 @@ app.get("/requisitos", (req, res) => {
   });
 });
 
-app.get("/requisitos/:idModelo", (req, res) => {
-  const { idModelo } = req.params;
-  db.query(
-    "SELECT * FROM requisitos WHERE id_modelo = ?",
-    [idModelo],
-    (err, results) => {
+app.get("/requisitos/:id", (req, res) => {
+  const { id } = req.params;
+  db.query("SELECT * FROM requisitos WHERE id = ?", [id], (err, results) => {
       if (err) {
-        res.status(500).send(err);
+          res.status(500).send(err);
+      } else if (results.length === 0) {
+          res.status(404).send("No data found");
       } else {
-        res.status(200).json(results);
+          res.status(200).json(results);
       }
-    }
-  );
+  });
 });
 
 app.post("/requisitos", (req, res) => {
