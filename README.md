@@ -35,7 +35,9 @@
 
 [Tablas y Diagrama de Figma](https://www.figma.com/team_invite/redeem/nw6cWu9E8LQhNzZPLR2Zeo)
 
+<br />
 
+## 🌐 Inicialización del Proyecto
 
 ```markdown
 # Proyecto React con Backend en Node.js y Base de Datos MySQL
@@ -47,6 +49,7 @@ Este proyecto utiliza React para el frontend, Node.js para el backend y MySQL co
 - Node.js (versión 14 o superior)
 - npm o yarn
 - MySQL (versión 5.7 o superior)
+```
 
 ## Instrucciones de Configuración
 
