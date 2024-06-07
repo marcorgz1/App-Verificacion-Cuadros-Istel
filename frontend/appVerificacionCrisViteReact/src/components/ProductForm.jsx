@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import axios, { all } from "axios";
 import { jsPDF } from "jspdf";
 import * as XLSX from "xlsx";
 import "../App.css";
@@ -155,18 +155,30 @@ const ProductForm = () => {
   useEffect(() => {
     const allChecked = Object.values(requisitosCumplidos).every(
       (value) => value
-    );
+    )    
     setIsButtonDisabled(!allChecked);
+    
   }, [requisitosCumplidos]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (!selectedCliente || !selectedModelo) {
-        alert("Por favor, selecciona un cliente y un modelo.");
-        return;
-      }
+  
+    if (!selectedCliente || !selectedModelo) {
+      alert("Por favor, selecciona un cliente y un modelo.");
+      return;
+    }
 
+    // Almacenar todos los requisitos checkeados
+    const allChecked = Object.values(requisitosCumplidos).every(
+      (value) => value
+    )
+  
+    if(!allChecked) {
+      alert("ERROR: Todos los requisitos deben de estar cumplidos.");
+      return;  // Asegurarse de no continuar si los requisitos no están cumplidos
+    }
+  
+    try {
       const data = {
         ...form,
         id_usuario: userId,
@@ -182,35 +194,30 @@ const ProductForm = () => {
         requisitos_cumplidos: requisitosCumplidos,
         imagenes: nombresFotos,
       };
-
+  
       console.log("Datos enviados:", data);
-
-      const response = await axios.post(
-        "http://localhost:3001/verificaciones",
-        data
-      );
-
+  
+      const response = await axios.post("http://localhost:3001/verificaciones", data);
+  
       if (response.status === 200) {
         alert("Verificación guardada con éxito");
-
+  
         // Mapear IDs de requisitos cumplidos a sus nombres
         const nombresRequisitosCumplidos = Object.keys(requisitosCumplidos)
           .filter((key) => requisitosCumplidos[key])
           .map((key) => {
-            const requisito = requisitos.find(
-              (req) => req.id === parseInt(key)
-            );
+            const requisito = requisitos.find((req) => req.id === parseInt(key));
             return requisito ? requisito.nombre_requisito : key;
           });
-
+  
         // Generar PDF
         const doc = new jsPDF();
-
+  
         // Cargar imagen desde el archivo
         const logoUrl = "/src/assets/logo-istel.png";
         const logoImage = new Image();
         logoImage.src = logoUrl;
-
+  
         // Configurar estilos
         const titleFontSize = 24;
         const textFontSize = 12;
@@ -221,7 +228,7 @@ const ProductForm = () => {
         const pageHeight = doc.internal.pageSize.getHeight();
         const logoWidth = 50;
         const logoHeight = 40;
-
+  
         // Añadir logo
         doc.addImage(
           logoImage,
@@ -231,7 +238,7 @@ const ProductForm = () => {
           logoWidth,
           logoHeight
         );
-
+  
         // Título
         doc.setFont("helvetica", "bold");
         doc.setFontSize(titleFontSize);
@@ -242,13 +249,13 @@ const ProductForm = () => {
           marginTop + logoHeight + 20,
           { align: "center" }
         );
-
+  
         // Información general y requisitos cumplidos en tabla
         doc.setFont("helvetica", "normal");
         doc.setFontSize(textFontSize);
         doc.setTextColor(60, 60, 60);
         let currentY = marginTop + logoHeight + 40;
-
+  
         const tableData = [
           ["N° Cuadro", form.numeroCuadro],
           ["Cliente", selectedClienteNombre],
@@ -259,7 +266,7 @@ const ProductForm = () => {
           ["N° Cliente 2", form.numeroCliente2],
           ["N° Cliente 3", form.numeroCliente3],
         ];
-
+  
         const additionalTableData = [
           ["N° Cliente 4", form.numeroCliente4],
           ["N° Cliente 5", form.numeroCliente5],
@@ -270,7 +277,7 @@ const ProductForm = () => {
               : "No se cumplieron requisitos",
           ],
         ];
-
+  
         const addTableToDoc = (
           doc,
           startX,
@@ -281,7 +288,7 @@ const ProductForm = () => {
           margin
         ) => {
           const cellWidth = (pageWidth - 2 * margin) / 2;
-
+  
           tableData.forEach((row, rowIndex) => {
             const rowY = startY + rowIndex * (textFontSize + 2 * cellPadding);
             // Verificar si se necesita una nueva página
@@ -293,17 +300,21 @@ const ProductForm = () => {
             row.forEach((cell, colIndex) => {
               const cellX = startX + colIndex * cellWidth;
               doc.rect(cellX, rowY, cellWidth, textFontSize + 2 * cellPadding);
-              doc.text(
+              const splitText = doc.splitTextToSize(
                 (cell || "").toString(),
+                cellWidth - 2 * cellPadding
+              );
+              doc.text(
+                splitText,
                 cellX + cellPadding,
                 rowY + textFontSize + cellPadding / 2
               );
             });
           });
-
+  
           return startY + tableData.length * (textFontSize + 2 * cellPadding);
         };
-
+  
         const cellPadding = 5;
         currentY = addTableToDoc(
           doc,
@@ -314,7 +325,7 @@ const ProductForm = () => {
           cellPadding,
           margin
         );
-
+  
         // Verificar si se necesita una nueva página para los campos adicionales
         if (
           currentY +
@@ -327,7 +338,7 @@ const ProductForm = () => {
         } else {
           currentY += lineSpacing + 10;
         }
-
+  
         currentY = addTableToDoc(
           doc,
           margin,
@@ -337,7 +348,7 @@ const ProductForm = () => {
           cellPadding,
           margin
         );
-
+  
         // Verificar si se necesita una nueva página para las fotos
         if (currentY + lineSpacing + 30 > pageHeight) {
           doc.addPage();
@@ -345,7 +356,7 @@ const ProductForm = () => {
         } else {
           currentY += lineSpacing + 10;
         }
-
+  
         // Añadir fotos al PDF
         const fotoWidth = 35;
         const fotoHeight = 35;
@@ -363,9 +374,9 @@ const ProductForm = () => {
           doc.addImage(foto, "JPEG", x, y, fotoWidth, fotoHeight);
           x += fotoWidth + 10;
         });
-
+  
         doc.save("verificacion_producto.pdf");
-
+  
         // Generar Excel
         const excelData = {
           "N° Cuadro": form.numeroCuadro,
@@ -381,7 +392,7 @@ const ProductForm = () => {
           "Requisitos cumplidos": nombresRequisitosCumplidos.join(", "),
           Imágenes: nombresFotos.join(", "),
         };
-
+  
         const worksheet = XLSX.utils.json_to_sheet([excelData]);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Verificaciones");
@@ -391,8 +402,8 @@ const ProductForm = () => {
       console.error("Error al guardar la verificación:", error);
       alert("Error al guardar la verificación");
     }
-  };
-
+  }
+  
   const openCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
