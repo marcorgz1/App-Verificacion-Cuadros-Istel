@@ -98,7 +98,7 @@ const ProductForm = () => {
   const fetchRequisitos = async (modeloId) => {
     try {
       const result = await axios.get(
-        `http://localhost:3001/requisitos/${modeloId}`
+        `http://localhost:3001/requisitos/modelo/${modeloId}`
       );
       setRequisitos(result.data);
       const initialRequisitos = {};

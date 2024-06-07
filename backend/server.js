@@ -330,9 +330,9 @@ app.get("/requisitos", (req, res) => {
   });
 });
 
-app.get("/requisitos/:id", (req, res) => {
-  const { id } = req.params;
-  db.query("SELECT * FROM requisitos WHERE id = ?", [id], (err, results) => {
+app.get("/requisitos/modelo/:id_modelo", (req, res) => {
+  const { id_modelo } = req.params;
+  db.query("SELECT * FROM requisitos WHERE id_modelo = ?", [id_modelo], (err, results) => {
       if (err) {
           res.status(500).send(err);
       } else if (results.length === 0) {
@@ -453,13 +453,15 @@ app.delete("/usuarios/:id", (req, res) => {
   );
 });
 
+// Ruta para las verificaciones
 app.get('/verificaciones', (req, res) => {
   const sql = `
-      SELECT v.*, u.nombre_usuario, c.nombre_cliente, m.nombre_modelo
+      SELECT v.*, u.nombre_usuario, c.nombre_cliente, m.nombre_modelo, r.nombre_requisito
       FROM verificaciones v
       LEFT JOIN usuarios u ON v.id_usuario = u.id
       LEFT JOIN clientes c ON v.id_cliente = c.id
       LEFT JOIN modelos m ON v.id_modelo = m.id
+      LEFT JOIN requisitos r ON FIND_IN_SET(r.id, v.requisitos_cumplidos)
   `;
   db.query(sql, (err, results) => {
       if (err) {

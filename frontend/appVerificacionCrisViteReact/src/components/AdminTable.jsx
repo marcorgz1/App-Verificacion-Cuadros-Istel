@@ -39,13 +39,12 @@ const AdminTable = () => {
                 }, {});
 
                 const updatedData = result.data.map(item => {
-                    const { nombre_usuario, nombre_cliente, nombre_modelo, nombres_requisitos, ...filteredItem } = item;
+                    const { nombre_usuario, nombre_cliente, nombre_modelo, ...filteredItem } = item;
                     return {
                         ...filteredItem,
                         id_usuario: usuarioMap[item.id_usuario] || item.nombre_usuario,
                         id_cliente: clienteMap[item.id_cliente] || item.nombre_cliente,
-                        id_modelo: modeloMap[item.id_modelo] || item.nombre_modelo,
-                        requisitos_cumplidos: nombres_requisitos ? nombres_requisitos.split(', ') : []
+                        id_modelo: modeloMap[item.id_modelo] || item.nombre_modelo
                     };
                 });
 
@@ -83,7 +82,7 @@ const AdminTable = () => {
         // Configurar estilos
         const titleFontSize = 24;
         const textFontSize = 12;
-        const margin = 45;
+        const margin = 20;
         const marginTop = 20;
         const lineSpacing = 10;
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -112,15 +111,18 @@ const AdminTable = () => {
             ["Modelo", row.id_modelo || ""],
             ["N° Serie interruptor general", row.numero_interruptor || ""],
             ["Operario", row.id_usuario || ""],
+            
             ["N° Cliente 1", row.numero_cliente || ""],
             ["N° Cliente 2", row.numero_cliente2 || ""],
             ["N° Cliente 3", row.numero_cliente3 || ""]
-            ];
             
-            const remainingTableData = [
-                ["N° Cliente 4", row.numero_cliente4 || ""],
-                ["N° Cliente 5", row.numero_cliente5 || ""],
-                ["Requisitos cumplidos", row.requisitos_cumplidos.join(', ')]
+        ];
+    
+
+        const remainingTableData = [
+            ["N° Cliente 4", row.numero_cliente4 || ""],
+            ["N° Cliente 5", row.numero_cliente5 || ""],
+            ["Requisitos cumplidos", row.requisitos_cumplidos || ""]
         ];
 
         const addTableToDoc = (doc, startX, startY, tableData, textFontSize, cellPadding, margin) => {
@@ -179,7 +181,7 @@ const AdminTable = () => {
         });
 
         doc.save("verificacion_producto.pdf");
-    }
+    };
 
     return (
         <Routes>
@@ -216,15 +218,7 @@ const AdminTable = () => {
                                                             ))}
                                                         </div>
                                                     ) : (
-                                                        key === 'requisitos_cumplidos' ? (
-                                                            <ul>
-                                                                {value.map((requisito, reqIndex) => (
-                                                                    <li key={reqIndex}>{requisito}</li>
-                                                                ))}
-                                                            </ul>
-                                                        ) : (
-                                                            value
-                                                        )
+                                                        value
                                                     )}
                                                 </td>
                                             ))}

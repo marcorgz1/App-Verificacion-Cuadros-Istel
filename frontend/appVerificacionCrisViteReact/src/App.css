@@ -28,6 +28,19 @@ header img {
 
 /* Formulario Login */
 
+.container-img {
+  position: absolute;
+  top: 10%;
+  left: 40%;
+  margin: auto;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.container-img img {
+  width: 210px;
+}
+
 .form-login input {
   margin-left: 40px;
   padding: 5px;
@@ -359,15 +372,6 @@ video {
   font-family: 'Onest';
 }
 
-.container-img {
-  position: absolute;
-  top: 3%;
-  left: 10%;
-  margin: auto;
-  background: #fff;
-  border-radius: 50%;
-}
-
 .remember-wrapper {
   display: flex;
   align-items: center;
@@ -481,19 +485,6 @@ video {
 
 .container-form2 a {
   color: #23305e;
-}
-
-.container-img {
-  position: absolute;
-  top: 6%;
-  left: 37%;
-  margin: auto;
-  background: #fff;
-  border-radius: 50%;
-}
-
-.container-img img {
-  width: 210px;
 }
 
 .remember-wrapper {
