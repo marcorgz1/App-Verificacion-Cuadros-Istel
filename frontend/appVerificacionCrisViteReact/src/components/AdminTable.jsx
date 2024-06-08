@@ -7,11 +7,26 @@ import CreateForm from './CreateForm';
 const AdminTable = () => {
     const { tableName } = useParams();
     const [data, setData] = useState([]);
+    const [requisitos, setRequisitos] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchData();
+        // Si el nombre de la tabla es "verificaciones"
+        if(tableName === 'verificaciones') {
+            // LLamar a la función "fetchRequisitos" para mostrar los requisitos cumplidos
+            fetchRequisitos()
+        }
     }, [tableName]);
+
+    const fetchRequisitos = async () => {
+        try {
+            const result = await axios.get('http://localhost:3001/requisitos');
+            setRequisitos(result.data);
+        } catch (error) {
+            console.error('Error fetching requisitos:', error);
+        }
+    };    
 
     const fetchData = async () => {
         try {
@@ -196,7 +211,7 @@ const AdminTable = () => {
                                 <thead>
                                     <tr>
                                         {data.length > 0 &&
-                                            Object.keys(data[0]).map((key) => (
+                                            Object.keys(data[0]).filter(key => key !== 'nombre_requisito').map((key) => (
                                                 <th key={key}>{key}</th>
                                             ))}
                                         <th>Acciones</th>
@@ -204,49 +219,49 @@ const AdminTable = () => {
                                 </thead>
                                 <tbody>
                                     {data.map((row) => (
-                                        <tr key={row.id}>
-                                            {Object.entries(row).map(([key, value], index) => (
-                                                <td key={index}>
-                                                    {tableName === 'modelos' && key === 'imagen' && value ? (
-                                                        <img src={`http://localhost:3001/uploads/${value}`} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
-                                                    ) : (tableName === 'verificaciones' && key === 'imagenes' && value) ? (
-                                                        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                                            {JSON.parse(value).map((img, imgIndex) => (
-                                                                <div key={imgIndex} style={{ flex: '1 0 30%', margin: '5px', width: '200px' }}>
-                                                                    <img src={`http://localhost:3001/uploads/${img}`} alt="Previsualización" style={{ width: '100%', height: 'auto' }} />
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        value
-                                                    )}
-                                                </td>
-                                            ))}
-                                            <td>
-                                                <button
-                                                    className="btn-crear-editar"
-                                                    onClick={() =>
-                                                        navigate(`/admin/${tableName}/edit/${row.id}`)
-                                                    }
-                                                >
-                                                    Editar
-                                                </button>
-                                                <button
-                                                    className="btn-eliminar"
-                                                    onClick={() => handleDelete(row.id)}
-                                                >
-                                                    Eliminar
-                                                </button>
-                                                {tableName === 'verificaciones' && (
-                                                    <button
-                                                        className="btn-pdf"
-                                                        onClick={() => handleGeneratePDF(row)}
-                                                    >
-                                                        Generar PDF
-                                                    </button>
+                                    <tr key={row.id}>
+                                        {Object.entries(row).filter(([key, value]) => key !== 'nombre_requisito').map(([key, value], index) => (
+                                            <td key={index}>
+                                                {tableName === 'modelos' && key === 'imagen' && value ? (
+                                                    <img src={`http://localhost:3001/uploads/${value}`} alt="Previsualización" style={{ width: '100px', height: '100px' }} />
+                                                ) : (tableName === 'verificaciones' && key === 'imagenes' && value) ? (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                        {JSON.parse(value).map((img, imgIndex) => (
+                                                            <div key={imgIndex} style={{ flex: '1 0 30%', margin: '5px', width: '200px' }}>
+                                                                <img src={`http://localhost:3001/uploads/${img}`} alt="Previsualización" style={{ width: '100%', height: 'auto' }} />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    value
                                                 )}
                                             </td>
-                                        </tr>
+                                        ))}
+                                        <td>
+                                            <button
+                                                className="btn-crear-editar"
+                                                onClick={() =>
+                                                    navigate(`/admin/${tableName}/edit/${row.id}`)
+                                                }
+                                            >
+                                                Editar
+                                            </button>
+                                            <button
+                                                className="btn-eliminar"
+                                                onClick={() => handleDelete(row.id)}
+                                            >
+                                                Eliminar
+                                            </button>
+                                            {tableName === 'verificaciones' && (
+                                                <button
+                                                    className="btn-pdf"
+                                                    onClick={() => handleGeneratePDF(row)}
+                                                >
+                                                    Generar PDF
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
                                     ))}
                                 </tbody>
                             </table>
